@@ -1,0 +1,4 @@
+name: CoronaABM
+channels:
+  - defaults
+prefix: /home/peter/anaconda3/envs/CoronaABM
