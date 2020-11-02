@@ -7,27 +7,33 @@ import networkx as nx
 from create_networks import *
 plt.rcParams.update({"font.size": 20})
 from const import *
+import CoronaABM_v2 as Main
 
 agents = np.nan
 N_subgroups = [np.nan for _ in range(3)]
 
 
-def plot_r_values(n_convolve=20, title=None):
+def plot_r_values(_agents, n_convolve=20, title=None):
     """ Plot all r values over time, via convolution """
-    global agents
-    all_rs = np.array([ag.r for ag in agents])
-    all_tes = np.array([ag.t_e for ag in agents])
-    al_rs_without_nan = all_rs[np.where(not np.isnan(all_rs))]
-    al_tes_without_nan = all_tes[np.where(not np.isnan(all_tes))]
+    fig = plt.figure(figsize=(16, 9))
+    ax = fig.add_subplot(111)
+    all_rs = np.array([ag.r for ag in _agents])
+    all_tes = np.array([ag.t_e for ag in _agents])
+    al_rs_without_nan = all_rs[np.where(np.isnan(all_rs) == False)]
+    al_tes_without_nan = all_tes[np.where(np.isnan(all_tes) == False)]
     inds = np.argsort(al_tes_without_nan)
     rs_sort = al_rs_without_nan[inds]
-    rs_conv = np.convolve(rs_sort, np.ones(N_convolve, ) / n_convolve, mode='valid')
+    rs_conv = np.convolve(rs_sort, np.ones(n_convolve, ) / n_convolve, mode='valid')
     times_conv = np.convolve(al_tes_without_nan[inds], np.ones(n_convolve, ) / n_convolve, mode="valid")
-    plt.title("R- Values")
-    plt.plot(times_conv, rs_conv)
+    ax.set_title("R- Values")
+    ax.set_xlim(0,)
+    ax.set_ylim(0,)
+    ax.set_xlabel("Time")
+    ax.set_ylabel("Reproductive number R")
+    ax.plot(times_conv, rs_conv)
     fig.tight_layout()
     if title is not None:
-        plt.savefig(title+".pdf", bbox_inches=tight)
+        plt.savefig(title+".pdf", bbox_inches="tight")
     plt.show()
     return
 
@@ -101,7 +107,7 @@ def plot_network(g, title=None):
 
 def plot_dists(title=None):
     fig = plt.figure(figsize=(16, 9))
-    gs = mpl.gridspec.GridSpec(2, 3)
+    gs = mpl.gridspec.GridSpec(2, 2)
 
     ax1 = fig.add_subplot(gs[0, 0])
     ax1.hist(AGENT_INFECTIOUSNESS.rvs(1000), density=True)
@@ -111,53 +117,60 @@ def plot_dists(title=None):
     ax1.hist(INCUBATION_TIME_DIST.rvs(1000), density=True)
     ax1.set_title("Incubation Time")
 
-    ax1 = fig.add_subplot(gs[1, 0])
-    ax1.hist(TIME_ONSET_TO_DEATH.rvs(1000), density=True)
-    ax1.set_title("Time from onset to death")
+    # ax1 = fig.add_subplot(gs[1, 0])
+    # ax1.hist(TIME_ONSET_TO_DEATH.rvs(1000), density=True)
+    # ax1.set_title("Time from onset to death")
+
+    # ax1 = fig.add_subplot(gs[1, 1])
+    # ax1.hist(RECOVERY_TIME_SYMPTOMATIC.rvs(1000), density=True)
+    # ax1.set_title("Recovery Time")
+
+    ax2 = fig.add_subplot(gs[1, 0])
+    # symptomatic
+    ax2.set_xlim(0, 24)
+    # ax2.set_ylim(0,1)
+    recovery_times_sympt = []
+    recovery_times_asympt = []
+
+    for t in range(20):
+        ag = Main.Agent()
+        inc = INCUBATION_TIME_DIST.rvs()
+        # ag.infectious_period = [inc - START_INFECTION_BEFORE_SYMPTOM,
+        #                   inc + START_INFECTION_BEFORE_SYMPTOM + RECOVERY_TIME_SYMPTOMATIC.rvs()]
+        ag.t_e = 0
+        ag.t_max_infectiousness = inc
+        ag.infectiousness = AGENT_INFECTIOUSNESS.rvs()
+        ts = np.arange(ag.t_e, ag.t_max_infectiousness + 12)
+
+        if t < 10:
+            ag.symptomatic = True
+            color = "r"
+        else:
+            ag.symptomatic = False
+            color = "orange"
+
+        i_s = []
+        for t_ in ts:
+            i_s.append(ag.get_infectiousness(t_))
+        t_recov = ts[np.where((np.array(i_s) == 0) * (ts > ag.t_max_infectiousness))[0][0]]
+
+        if ag.symptomatic:
+            recovery_times_sympt.append(t_recov)
+        else:
+            recovery_times_asympt.append(t_recov)
+
+        ax2.plot(ts, i_s, alpha=1, color=color)
+    ax2.set_title("Infectiousness")
+    ax2.plot([], [], color="red", label="Symptomatic")
+    ax2.plot([], [], color="orange", label="Asymptomatic")
+    ax2.legend()
 
     ax1 = fig.add_subplot(gs[1, 1])
-    ax1.hist(RECOVERY_TIME_SYMPTOMATIC.rvs(1000), density=True)
+    bins = np.arange(0, 24, step=2)
+    ax1.hist(recovery_times_sympt, bins=bins, density=True, alpha=0.5, color="r")
+    ax1.hist(recovery_times_asympt, bins=bins, density=True, alpha=0.5, color="orange")
     ax1.set_title("Recovery Time")
 
-    ax2 = fig.add_subplot(gs[1, 2])
-    # symptomatic
-    ax2.set_xlim(0, 20)
-    # ax2.set_ylim(0,1)
-    for t in range(10):
-        ag = Agent()
-        inc = INCUBATION_TIME_DIST.rvs()
-        # ag.infectious_period = [inc - START_INFECTION_BEFORE_SYMPTOM,
-        #                   inc + START_INFECTION_BEFORE_SYMPTOM + RECOVERY_TIME_SYMPTOMATIC.rvs()]
-        ag.symptomatic = True
-        ag.t_e = 0
-        ag.t_max_infectiousness = inc
-        ag.infectiousness = AGENT_INFECTIOUSNESS.rvs()
-        ts = np.arange(ag.t_e, ag.t_max_infectiousness + 9)
-        i_s = []
-        for t_ in ts:
-            i_s.append(ag.get_infectiousness(t_))
-        ax2.plot(ts, i_s, alpha=1, color="k")
-        ax2.set_title("Infectiousness Symptomatic")
-
-    ax1 = fig.add_subplot(gs[0, 2])
-    ax1.set_xlim(0, 20)
-    # ax1.set_ylim(0,1)
-    # symptomatic
-    for t in range(10):
-        ag = Agent()
-        inc = INCUBATION_TIME_DIST.rvs()
-        # ag.infectious_period = [inc - START_INFECTION_BEFORE_SYMPTOM,
-        #                   inc + START_INFECTION_BEFORE_SYMPTOM + RECOVERY_TIME_SYMPTOMATIC.rvs()]
-        ag.symptomatic = False
-        ag.t_e = 0
-        ag.t_max_infectiousness = inc
-        ag.infectiousness = AGENT_INFECTIOUSNESS.rvs()
-        ts = np.arange(ag.t_e, ag.t_max_infectiousness + 9, step=0.5)
-        i_s = []
-        for t_ in ts:
-            i_s.append(ag.get_infectiousness(t_))
-        ax1.plot(ts, i_s, alpha=1, color="k")
-    ax1.set_title("Infectiousness A-Symptomatic")
     fig.tight_layout()
     if title is not None:
         plt.savefig(title+".pdf", bbox_inches=tight)
@@ -185,6 +198,6 @@ def plot_statistics(results, policy_dates, title=None):
     plt.legend()
     fig.tight_layout()
     if title is not None:
-        plt.savefig(title + ".pdf", bbox_inches=tight)
+        plt.savefig(title + ".pdf", bbox_inches="tight")
     plt.show()
     return

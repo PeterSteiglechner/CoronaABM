@@ -26,7 +26,7 @@ import networkx as nx
 from create_networks import *
 plt.rcParams.update({"font.size": 20})
 from const import *
-from additional_plot_functions import plot_network, plot_r_values
+import additional_plot_functions as plotters  # import plot_network, plot_r_values, plot_dists
 from policies import *
 
 
@@ -201,15 +201,15 @@ def initialise_network(plotting=False):
     print("Done: creating networks, now plotting them ")
 
     if plotting:
-        plot_network(H, "Households")
-        plot_network(R, "Random")
-        plot_network(F, "Friends/Evening")
-        plot_network(W, "Work/School")
-        plot_network(g3, "Total")
+        plotters.plot_network(H, "Households")
+        plotters.plot_network(R, "Random")
+        plotters.plot_network(F, "Friends/Evening")
+        plotters.plot_network(W, "Work/School")
+        plotters.plot_network(g3, "Total")
 
-    for u, v, d in G3.edges(data=True):
+    for u, v, d in g3.edges(data=True):
         d['weight'] = 1  # Set all weights of all networks to 1
-    total_node_degrees = nx.adjacency_matrix(G3).sum(axis=1)
+    total_node_degrees = nx.adjacency_matrix(g3).sum(axis=1)
     print("An agent has on average : {:.2f}+-{:.2f} links in the net".format(total_node_degrees.mean(),
                                                                              total_node_degrees.std()))
     print("Done plotting the networks")
@@ -309,7 +309,7 @@ def run(times):
 if __name__ == "__main__":
 
     # Plot constant distributions
-    plot_dists(title=None)
+    plotters.plot_dists(title=None)
 
     """
     INIT
@@ -320,7 +320,7 @@ if __name__ == "__main__":
     """
     Time Array
     """
-    t_array = np.arange(0, 100, step=0.5)
+    t_array = np.arange(0, 120, step=0.5)
 
     """
     Policies
@@ -335,7 +335,7 @@ if __name__ == "__main__":
     # Ensemble Run:
     all_results = []
 
-    seeds = [1, 2, 3, 4, 5]
+    seeds = np.arange(1, 20, step=1)
     for n, seed in enumerate(seeds):
         print("################# \n ###   New Run   seed {}    ### \n ################# \n".format(seed))
         np.random.seed(seed)
@@ -352,8 +352,8 @@ if __name__ == "__main__":
         results = run(t_array)
 
         # Plotting
-        plot_statistics(results, title=FOLDER+"Statistics_seed{:.d}".format(seed))
-        plot_r_values(n_convolve=5, title=FOLDER+"R0_seed{:.d}".format(seed))
+        plotters.plot_statistics(results, new_policies_dates, title=FOLDER+"Statistics_seed{}".format(int(seed)))
+        plotters.plot_r_values(agents, n_convolve=5, title=FOLDER+"R0_seed{}".format(int(seed)))
 
         all_results.append(results)
 
