@@ -12,7 +12,7 @@ agents = np.nan
 N_subgroups = [np.nan for _ in range(3)]
 
 
-def plot_r_values(n_convolve=20):
+def plot_r_values(n_convolve=20, title=None):
     """ Plot all r values over time, via convolution """
     global agents
     all_rs = np.array([ag.r for ag in agents])
@@ -25,11 +25,14 @@ def plot_r_values(n_convolve=20):
     times_conv = np.convolve(al_tes_without_nan[inds], np.ones(n_convolve, ) / n_convolve, mode="valid")
     plt.title("R- Values")
     plt.plot(times_conv, rs_conv)
+    fig.tight_layout()
+    if title is not None:
+        plt.savefig(title+".pdf", bbox_inches=tight)
     plt.show()
     return
 
 
-def plot_network(g, title):
+def plot_network(g, title=None):
     """ Plot a network and its adjacency Matrix"""
     global agents, N_subgroups
     indices_groups = [
@@ -90,11 +93,13 @@ def plot_network(g, title):
     ax.vlines(np.cumsum(N_subgroups), 0, len(agents), linestyles="--", lw=1, alpha=0.4, colors="gray")
     ax.hlines(np.cumsum(N_subgroups), 0, len(agents), linestyles="--", lw=1, alpha=0.4, colors="gray")
     fig.tight_layout()
+    if title is not None:
+        plt.savefig(title+".pdf", bbox_inches=tight)
     plt.show()
     return
 
 
-def plot_dists():
+def plot_dists(title=None):
     fig = plt.figure(figsize=(16, 9))
     gs = mpl.gridspec.GridSpec(2, 3)
 
@@ -153,22 +158,33 @@ def plot_dists():
             i_s.append(ag.get_infectiousness(t_))
         ax1.plot(ts, i_s, alpha=1, color="k")
     ax1.set_title("Infectiousness A-Symptomatic")
-
     fig.tight_layout()
+    if title is not None:
+        plt.savefig(title+".pdf", bbox_inches=tight)
     plt.show()
     return
 
 
-def plot_statistics(results):
+def plot_statistics(results, policy_dates, title=None):
     t_array = results[:, 0]
     fig = plt.figure(figsize=(16, 9))
     ax = fig.add_subplot(111)
     state_labels = ["s", "e", "i_a", "i_ps", "i_s", "d", "r_a", "r_s"]
     ax.plot(t_array, results[:, 0 + 1], label=state_labels[0])
+    ax.set_ylim(ymax=np.sum(results[0, 1:]))
+
     plt.legend()
     ax2 = ax.twinx()
     for n, state in enumerate(state_labels[1:]):
         ax2.plot(t_array, results[:, n+1+1], label=state)
+
+    ymin, ymax = ax.get_ylim()
+    for pol, pol_date in policy_dates:
+        ax.vlines(pol_date, ymin, ymax, linestyles="--", color="gray")
+    ax2.set_ylim(0, )
     plt.legend()
+    fig.tight_layout()
+    if title is not None:
+        plt.savefig(title + ".pdf", bbox_inches=tight)
     plt.show()
     return

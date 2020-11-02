@@ -309,7 +309,7 @@ def run(times):
 if __name__ == "__main__":
 
     # Plot constant distributions
-    plot_dists()
+    plot_dists(title=None)
 
     """
     INIT
@@ -352,8 +352,8 @@ if __name__ == "__main__":
         results = run(t_array)
 
         # Plotting
-        plot_statistics(results)
-        plot_r_values(n_convolve=5)
+        plot_statistics(results, title=FOLDER+"Statistics_seed{:.d}".format(seed))
+        plot_r_values(n_convolve=5, title=FOLDER+"R0_seed{:.d}".format(seed))
 
         all_results.append(results)
 
