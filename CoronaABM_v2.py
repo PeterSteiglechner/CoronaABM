@@ -24,13 +24,10 @@ import matplotlib as mpl
 import scipy.stats as stats
 import networkx as nx
 from create_networks import *
-plt.rcParams.update({"font.size":20})
+plt.rcParams.update({"font.size": 20})
 from const import *
 from additional_plot_functions import plot_network, plot_r_values
 from policies import *
-
-
-
 
 
 # Define Agent
@@ -51,7 +48,8 @@ class Agent:
     t_e = np.nan
     r = np.nan
 
-    isolation_status = ["no isolation", np.nan]  # [state (no isolation, social distance, quarantine), end of the isolation status]
+    isolation_status = ["no isolation", np.nan]
+    # [state (no isolation, social distance, quarantine), end of the isolation status]
 
     def catch_virus(self, t_exposure):
         """
@@ -96,7 +94,7 @@ class Agent:
             # offset_asympt_infectiousness = onset_asympt_infectiousness + RECOVERY_TIME_ASYMPTOMATIC.rvs()
             # self.infectious_period = [onset_asympt_infectiousness, offset_asympt_infectiousness]
 
-        self.infectiousness = AGENT_INFECTIOUSNESS.rvs()  #* FACTOR_INFECTIOUSNESS
+        self.infectiousness = AGENT_INFECTIOUSNESS.rvs()  # * FACTOR_INFECTIOUSNESS
 
         # Alternative He2020, infectivity period starts on day 0, increases up to t_sympt,
         # self.infectious_period = [self.t_e, self.t_e+20]
@@ -120,14 +118,13 @@ class Agent:
     def get_infectiousness(self, _t):
         amplitude = 1 if self.symptomatic else INFECTIOUSNESS_ASYMPTOMATIC
 
-
         g_t = G.pdf(_t - self.t_max_infectiousness)
         relative_g_t = g_t / G.pdf(0)
         if g_t < 0.01:  # _t > self.t_max_infectiousness and
             #    self.state = "r"
             #    self.clear_infection()
             return 0
-        return relative_g_t * amplitude * self.infectiousness #* R0_CORRECTION
+        return relative_g_t * amplitude * self.infectiousness  # * R0_CORRECTION
 
     def clear_infection(self):
         # Clear all
@@ -140,16 +137,17 @@ class Agent:
         self.isolation_status[1] = np.nan
         return
 
+
 def initialise():
     """ Initialises a list of agents """
     global agents
-    #global family_net, random_net
+    # global family_net, random_net
     global N_subgroups
 
     # Group Index Assignment with slight random variations
     all_riskgroup_indices = np.random.choice(RISKGROUPS, p=FRACTIONS_RISKGROUPS, size=N_AGENTS)
     all_riskgroup_indices = np.sort(all_riskgroup_indices)
-    N_subgroups = [np.sum(all_riskgroup_indices == k) for k in RISKGROUPS]
+    N_subgroups = [np.sum(all_riskgroup_indices == _g) for _g in RISKGROUPS]
 
     # Group Index assignment without randomness
     '''
@@ -178,12 +176,15 @@ def initialise():
     symptomatic_agents = np.random.choice(agents, size=N_INFECTED_INIT)
     for ag in symptomatic_agents:
         ag.catch_virus(0)
-        #ag.infectiousness = 1
-    #state = "e"  # At time t=0 we start with one exposed
-
+        # ag.infectiousness = 1
+    # state = "e"  # At time t=0 we start with one exposed
     return
 
-def initialise_network(agents, N_subgroups, plotting=False):
+
+def initialise_network(plotting=False):
+    global agents, N_subgroups
+    global H, F, W, R, G3
+
     # Create Networks
     edge_weight = 1
     R = create_Random_Network(agents, N_subgroups, AVG_RANDOM_CONTACTS, edge_weight)
@@ -194,17 +195,17 @@ def initialise_network(agents, N_subgroups, plotting=False):
     edge_weight = 4
     W = create_Friends_Network(agents, N_subgroups, N_AVERAGE_WORK, CORRELATIONS_WORK, edge_weight)
 
-    G = nx.compose(F, H)
-    G2 = nx.compose(G, W)
-    G3 = nx.compose(G2, R)
+    g1 = nx.compose(F, H)
+    g2 = nx.compose(g1, W)
+    g3 = nx.compose(g2, R)
     print("Done: creating networks, now plotting them ")
 
-    if plotting==True:
-        plot_network(H, agents, N_subgroups, "Households")
-        plot_network(R, agents, N_subgroups, "Random")
-        plot_network(F, agents, N_subgroups, "Friends/Evening")
-        plot_network(W, agents, N_subgroups, "Work/School")
-        plot_network(G3, agents, N_subgroups, "Total")
+    if plotting:
+        plot_network(H, "Households")
+        plot_network(R, "Random")
+        plot_network(F, "Friends/Evening")
+        plot_network(W, "Work/School")
+        plot_network(g3, "Total")
 
     for u, v, d in G3.edges(data=True):
         d['weight'] = 1  # Set all weights of all networks to 1
@@ -212,7 +213,7 @@ def initialise_network(agents, N_subgroups, plotting=False):
     print("An agent has on average : {:.2f}+-{:.2f} links in the net".format(total_node_degrees.mean(),
                                                                              total_node_degrees.std()))
     print("Done plotting the networks")
-    return H, F, W, R, G3
+    return
 
 
 def update(t):
@@ -229,7 +230,7 @@ def update(t):
         #            ag.state = "i_a"
 
         else:
-            if ag.state == "i_ps": # any of the infectious
+            if ag.state == "i_ps":  # any of the infectious
                 if t > ag.t_onset_symptoms:
                     ag.state = "i_s"
 
@@ -247,7 +248,6 @@ def update(t):
 
                     ag.clear_infection()
 
-
             if ag.state[0] == "i":
                 # determine neighbours
                 household_contacts = list(H.adj[ag.id])
@@ -258,7 +258,6 @@ def update(t):
                 all_contacts = [household_contacts, random_contacts, activity_contacts, work_contacts]
 
                 contacts, ampl_factors = current_policy(ag, agents, t, all_contacts)
-
 
                 # Meet friends/daytime, family and random
                 for c, ampl_factor in zip(contacts, ampl_factors):
@@ -275,83 +274,39 @@ def update(t):
 
 def check_policy(t):
     t_policies = np.array([pol[1] for pol in new_policies_dates])
-    current_pol = new_policies_dates[int(np.where(t>=t_policies)[0][-1])][0]
+    current_pol = new_policies_dates[int(np.where(t >= t_policies)[0][-1])][0]
     return current_pol
 
 
+def run(times):
+    """ Perform all update steps and return results """
+    print("Do updates.")
+    print("t, #s, #e, #i_a, #i_ps, #i_s, #d, #r_a, #r_s")
+    global agents, N_subgroups
+    global current_policy
+    global R
 
+    state_labels = ["s", "e", "i_a", "i_ps", "i_s", "d", "r_a", "r_s"]
+    _results = np.empty([len(times), 9])
+    for n_t, t in enumerate(times):
+        update(t)
+        R = create_Random_Network(agents, N_subgroups, AVG_RANDOM_CONTACTS, 1)
+        # G3 = nx.compose(G2, R)
 
+        states = [[ag.state for ag in agents].count(state) for state in state_labels]
+        # non_healthy_agents = np.where(np.array([ag.state for ag in agents]) < "s")[0]
+        print(t, states, end=" ")
 
-def plot_dists():
-    fig = plt.figure(figsize=(16,9))
-    gs = mpl.gridspec.GridSpec(2,3)
+        res = [t]
+        res.extend(states)
+        _results[n_t, :] = np.array(res)
 
-    ax1 = fig.add_subplot(gs[0,0])
-    ax1.hist(AGENT_INFECTIOUSNESS.rvs(1000), density=True)
-    ax1.set_title("Agent infectiousness")
-
-    ax1 = fig.add_subplot(gs[0, 1])
-    ax1.hist(INCUBATION_TIME_DIST.rvs(1000), density=True)
-    ax1.set_title("Incubation Time")
-
-    ax1 = fig.add_subplot(gs[1, 0])
-    ax1.hist(TIME_ONSET_TO_DEATH.rvs(1000), density=True)
-    ax1.set_title("Time from onset to death")
-
-    ax1 = fig.add_subplot(gs[1, 1])
-    ax1.hist(RECOVERY_TIME_SYMPTOMATIC.rvs(1000), density=True)
-    ax1.set_title("Recovery Time")
-
-    ax2 = fig.add_subplot(gs[1, 2])
-    # symptomatic
-    ax2.set_xlim(0,20)
-    #ax2.set_ylim(0,1)
-    for t in range(10):
-        ag = Agent()
-        inc = INCUBATION_TIME_DIST.rvs()
-        # ag.infectious_period = [inc - START_INFECTION_BEFORE_SYMPTOM, inc + START_INFECTION_BEFORE_SYMPTOM + RECOVERY_TIME_SYMPTOMATIC.rvs()]
-        ag.symptomatic=True
-        ag.t_e = 0
-        ag.t_max_infectiousness = inc
-        ag.infectiousness = AGENT_INFECTIOUSNESS.rvs()
-        ts = np.arange(ag.t_e, ag.t_max_infectiousness + 9)
-        I_s = []
-        for t_ in ts:
-            I_s.append(ag.get_infectiousness(t_))
-        ax2.plot(ts, I_s, alpha =1, color = "k")
-        ax2.set_title("Infectiousness Symptomatic")
-
-    ax1 = fig.add_subplot(gs[0,2])
-    ax1.set_xlim(0,20)
-    #ax1.set_ylim(0,1)
-    # symptomatic
-    for t in range(10):
-        ag = Agent()
-        inc = INCUBATION_TIME_DIST.rvs()
-        # ag.infectious_period = [inc - START_INFECTION_BEFORE_SYMPTOM, inc + START_INFECTION_BEFORE_SYMPTOM + RECOVERY_TIME_SYMPTOMATIC.rvs()]
-        ag.symptomatic = False
-        ag.t_e = 0
-        ag.t_max_infectiousness = inc
-        ag.infectiousness = AGENT_INFECTIOUSNESS.rvs()
-        ts = np.arange(ag.t_e, ag.t_max_infectiousness + 9, step=0.5)
-        I_s = []
-        for t_ in ts:
-            I_s.append(ag.get_infectiousness(t_))
-        ax1.plot(ts, I_s, alpha =1, color = "k")
-    ax1.set_title("Infectiousness A-Symptomatic")
-
-    fig.tight_layout()
-    plt.show()
-    return
-
-
-
+        current_policy = check_policy(t)
+        print(" Policy = "+current_policy.__name__, end="\n")
+    return _results
 
 
 if __name__ == "__main__":
-
-    #seed = 15
-    #np.random.seed(seed)
 
     # Plot constant distributions
     plot_dists()
@@ -377,58 +332,30 @@ if __name__ == "__main__":
     ]
     current_policy = new_policies_dates[0][0]
 
-    agents = []  # list of all agents (ordered by index)
-    N_subgroups = []
-    initialise()  # Initialise all agents
-    print("Done initialising all agents")
+    # Ensemble Run:
+    all_results = []
 
-    H, F, W, R, G3 = initialise_network(agents, N_subgroups)
+    seeds = [1, 2, 3, 4, 5]
+    for n, seed in enumerate(seeds):
+        print("################# \n ###   New Run   seed {}    ### \n ################# \n".format(seed))
+        np.random.seed(seed)
 
+        agents = []  # list of all agents (ordered by index)
+        N_subgroups = []
+        initialise()  # Initialise all agents
+        print("Done initialising all agents")
 
-    ''''
-    Main UPDATING
-    '''
-    print("Do updates.")
-    print("t, #s, #e, #i_a, #i_ps, #i_s, #d, #r_a, #r_s")
-    results = np.empty([len(t_array), 9])
+        H, F, W, R, G3 = [np.nan for _ in range(5)]
+        initialise_network(plotting=False)
 
-    for n,t in enumerate(t_array):
-        update(t)
-        R = create_Random_Network(agents, N_subgroups, AVG_RANDOM_CONTACTS, 1)
-        #G3 = nx.compose(G2, R)
+        # Main UPDATING
+        results = run(t_array)
 
-        states = [[ag.state for ag in agents].count(state) for state in ["s", "e", "i_a", "i_ps", "i_s", "d", "r_a", "r_s"]]
-        non_healthy_agents = np.where(np.array([ag.state for ag in agents]) < "s")[0]
-        print(t, states)
-        #print("   Non_healthy: ", non_healthy_agents)
-        res = [t]
-        res.extend(states)
-        results[n, :] = np.array(res)
+        # Plotting
+        plot_statistics(results)
+        plot_r_values(n_convolve=5)
 
-        current_policy = check_policy(t)
+        all_results.append(results)
 
-    '''
-    Plotting
-    '''
-
-    fig = plt.figure(figsize=(16,9))
-    ax = fig.add_subplot(111)
-    state_labels = ["s", "e", "i_a", "i_ps", "i_s", "d", "r_a", "r_s"]
-    ax.plot(t_array, results[:, 0 + 1], label=state_labels[0])
-    plt.legend()
-    ax2 = ax.twinx()
-    for n, state in enumerate(state_labels[1:]):
-        ax2.plot(t_array, results[:,n+1+1], label=state)
-    plt.legend()
-    plt.show()
-
-
-""" 
-Plot R values
-"""
-rs = []
-for ag in agents:
-    if ag.r is not np.nan:
-        rs.append(ag.r)
-print(np.mean(rs), rs)
-plot_r_values(agents, N_convolve = 5)
+    for k, s in zip(all_results, seeds):
+        print("Seed: {} with results: {}".format(s, k[-1, :]))

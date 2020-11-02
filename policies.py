@@ -6,7 +6,7 @@ import numpy as np
 #
 # def initiate_policy(t_start, policy):
 #     if t>t_start:
-#         for ag in agnets:
+#         for ag in agents:
 #             ag.policies.extend("isolate_sick")
 #
 #
@@ -15,8 +15,8 @@ import numpy as np
 #         contact_lists =
 
 
-
 def policy_0(ag, agents, t, all_contacts):
+    """ Default """
     household_contacts, random_contacts, activity_contacts, work_contacts = all_contacts
     contacts = []
     ampl_factors = []
@@ -27,6 +27,7 @@ def policy_0(ag, agents, t, all_contacts):
 
 
 def policy_1(ag, agents, t, all_contacts):
+    """ Quarantine all symptomatic agents and social distance for all first contacts"""
     household_contacts, random_contacts, activity_contacts, work_contacts = all_contacts
 
     if ag.state == "i_s":
@@ -57,7 +58,7 @@ def policy_1(ag, agents, t, all_contacts):
 
 
 def policy_2(ag, agents, t, all_contacts):
-    """ Mask on top of isolation etc"""
+    """ Mask on top of quarantine symptoms and distance their neighbours etc"""
     household_contacts, random_contacts, activity_contacts, work_contacts = all_contacts
 
     if ag.state == "i_s":
