@@ -1,0 +1,154 @@
+%!Tex root = CoronaABM.tex
+
+
+%\begin{frame}{Social Network in Covid-19 ABM}
+%
+%General idea
+%
+%\end{frame}
+
+
+%\begin{frame}[fragile]
+%	\frametitle{Code}
+%	
+%
+%
+%\end{frame}
+
+
+
+
+
+  \section{Update Function and Run Function}
+
+\againframe{codeoverview}
+
+\begin{frame}[fragile]
+	\frametitle{Update Function}
+	\begin{itemize} 
+	\item<1-> Choose queuing order of agents (\textit{np.random.choice}).
+	\item<2-> For each agent:
+	\begin{itemize} 
+	\item<2-> Check (and update) health state \ra state-dependent action  
+	\item<2-> Potentially infect others in network with certain probability
+	\end{itemize}
+      \end{itemize}
+	\begin{overlayarea}{\linewidth}{100cm}
+\begin{onlyenv}<1,2>
+  \begin{lstlisting}[basicstyle=\tiny\ttfamily, tabsize=6]
+
+    
+def update(t_now):
+	queue = np.random.choice(agents, size=N_AGENTS, replace=False)
+	for ag in queue:
+\end{lstlisting}
+\end{onlyenv}
+
+\begin{onlyenv}<3>
+  \begin{lstlisting}[basicstyle=\tiny\ttfamily, tabsize=6]
+
+    
+def update(t_now):
+	queue = np.random.choice(agents, size=N_AGENTS, replace=False)
+	for ag in queue:
+		if ag.health_state == "susceptible":
+			pass  # Do nothing
+\end{lstlisting}
+\end{onlyenv}
+
+\begin{onlyenv}<4>
+  \begin{lstlisting}[basicstyle=\tiny\ttfamily, tabsize=6]
+
+    
+def update(t_now):
+	queue = np.random.choice(agents, size=N_AGENTS, replace=False)
+	for ag in queue:
+		if ag.health_state == "susceptible":
+			pass  # Do nothing
+		if ag.health_state == "exposed":
+			# Potentially become infectious
+			if t_now >= ag.infectious_period[0]:
+				if ag.symptomatic:
+					ag.health_state = "infectious_presymptomatic" 
+				else:
+					ag.health_state = "infectious_asymptomatic"
+\end{lstlisting}
+Switch from latent to infectious \textit{health\_state} (pre-symptom or asymptomatic) when \textit{infectious\_period} starts
+\end{onlyenv}
+\begin{onlyenv}<5>
+  \begin{lstlisting}[basicstyle=\tiny\ttfamily, tabsize=6]
+
+    
+def update(t_now):
+	queue = np.random.choice(agents, size=N_AGENTS, replace=False)
+	for ag in queue:
+		if ag.health_state == "susceptible":
+			...
+		if ag.health_state == "exposed":
+			...
+		if ag.health_state == "infectious_presymptomatic":  
+			if t_now >= ag.t_onset_symptoms:
+				ag.health_state = "infectious_symptomatic"
+\end{lstlisting}
+Switch from pre-symptomatic to symptomatic when incubation period is over.
+\end{onlyenv}
+
+\begin{onlyenv}<6>
+  \begin{lstlisting}[basicstyle=\tiny\ttfamily, tabsize=6]
+
+    
+def update(t_now):
+	queue = np.random.choice(agents, size=N_AGENTS, replace=False)
+	for ag in queue:
+		if ag.health_state == "susceptible":
+			...
+		if ag.health_state == "exposed":
+			...
+		if ag.health_state == "infectious_presymptomatic":  
+			...
+		if "infectious" in ag.health_state:  
+			if t_now >= ag.infectious_period[1]:
+				if ag.fatal_case:
+					ag.health_state = "dead"
+				else:
+					ag.health_state = "recovered" 
+\end{lstlisting}
+If agent in \textit{health\_state ="infectious\_..."} and the infectious period is over, then either recover or die.
+\end{onlyenv}
+
+\begin{onlyenv}<7>
+\begin{lstlisting}[basicstyle=\tiny\ttfamily, tabsize=6] 
+
+  
+def update(t_now):
+	queue = np.random.choice(agents, size=N_AGENTS, replace=False)
+	for ag in queue:
+		...
+		if "infectious" in ag.health_state:
+                    infect_others(ag, t_now)
+\end{lstlisting}
+
+                      \vspace{0.2cm}
+\begin{lstlisting}[basicstyle=\tiny\ttfamily, tabsize=6] 
+RELATIVE_INFECTIOUSNESS = {"infectious_presymptomatic": 0.5, "infectious_symptomatic": 1, "infectious_asymptomatic": 0.2}
+
+def infect_others(ag, t):
+      p_i = ag.base_infectiousness * RELATIVE_INFECTIOUSNESS[ag.health_state]	
+      # Loop through contacts and potentially infect them
+      linked_contacts = list(network.adj[ag.id])  # Indices of neighbours
+      for c in linked_contacts:
+            contact_person = agents[c]
+            if contact_person.health_state == "susceptible"
+                  if np.random.random() < p_i:
+                        catch_virus(contact_person, t)
+\end{lstlisting}
+              \end{onlyenv}
+\end{overlayarea}
+\end{frame}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "CoronaABM"
+%%% TeX-master: "CoronaABM"
+%%% TeX-master: "CoronaABM"
+%%% End:

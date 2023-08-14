@@ -1,0 +1,186 @@
+%\begin{frame}{Social Networks}
+%
+%Some slides from Ago:
+%\begin{itemize} 
+%\item What is a network
+%\item What is the meaning of nodes, links
+%\item Mention directed/undirected/weighted
+%\item Different topologies (mainly small-world and scale-free)
+%\begin{itemize} 
+%\item Node Degree, 
+%\item Clustering coeff
+%\end{itemize}
+%\item The networkx package
+%\end{itemize}
+%\end{frame}
+
+
+\begin{frame}{Social network -- Basics}
+  Who interacts with who? \ra Social network \newline
+  Here: who may get infected by who? \ra Social network
+	\begin{itemize}
+	\item Each node represents one agent
+	\item Link/Edge between nodes means that agents can be in `physical contact'
+          \vspace{0.2cm}
+        \item<2-> (Average) node degree =  (avg) number of links from agents
+	\item<3-> Adjacency matrix $A$, where $A_{ij}=1$ denotes that a link connects nodes $i$ and $j$        
+	\end{itemize}
+        \vfill
+      % \vspace{0.5cm}  % \only<1>{\includegraphics[width=0.7\linewidth]{WattsStrogatz/network}}
+       	\only<1,2>{\centering \includegraphics[height=3cm, trim={0 0 0 1.5cm},clip]{WattsStrogatz/network}}%
+        \visible<3->{\centering \includegraphics[height=3cm]{Networks/images/adj}}%
+        %\vfill
+\end{frame}
+
+
+
+\begin{frame}{Social network - Topology}
+\begin{overlayarea}{\linewidth}{12cm}
+\begin{itemize} 
+\item Here, we use a `Watts-Strogatz network' -- often also referred to as `small-world network'.
+\begin{itemize} 
+\item<2-> All $n$ nodes/agents are aligned in a ring.
+\item<3-> They are connected to their $k$ nearest neighbours (left/right)
+\item<4-> We loop through each agent and through each link to the right of that agent. With probability $p$, the link is capped and re-drawn to a random node/agent anywhere on the ring.
+\end{itemize} 
+\end{itemize}
+\begin{center}
+	\only<1>{\vspace{3cm}}
+	
+	\only<2>{\includegraphics[width=0.35\linewidth]{images/watts1}}
+	
+	\only<3>{\includegraphics[width=0.35\linewidth]{images/watts2}}
+	
+	\only<4>{\includegraphics[width=0.35\linewidth]{images/watts3}}
+	
+	\only<5>{\includegraphics[width=0.7\linewidth]{images/watts_strogatz}}
+\end{center}
+{\tiny  D. J. Watts \& S. H. Strogatz, Collective dynamics of 'small-world'
+	networks, \textit{Nature}, 393:440--442, 1998.}	
+\end{overlayarea}
+\end{frame}
+
+\begin{frame}{Social network -- Perspective}
+	\begin{itemize} 
+	\item Network theory is one of the hottest topics in science 
+	\item The method can be applied to various systems, topics, problems in ANY discipline
+          \newline
+          {\small neural networks, social media, climate tipping points, collapse of stock markets, ...}
+	\item More on network theory: 
+	\begin{itemize} 	
+	\item Directed and weighted links
+	\item Topologies of different networks:
+		\begin{itemize} 
+		\item Scale-free network \ra e.g.\ Barabási-Albert-Model
+		\item Random graph
+		\end{itemize}
+	\item Clustering 
+	\item Adaptive networks, i.e.\ networks that change over time depending on the state of the system/agents.
+	\end{itemize}
+	\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{The \textit{networkx} package in python}
+
+\begin{overlayarea}{\linewidth}{12cm}
+\begin{onlyenv}<1->
+\begin{lstlisting}[basicstyle=\tiny\ttfamily, tabsize=6] 
+import networkx as nx
+G = nx.Graph()
+G.add_node("Abdu")
+...
+G.add_edge("Abdu", "Cynthia")
+...
+pos = nx.spring_layout(G)	# Just a `nice' way of arranging the nodes
+nx.draw(G, pos, with_labels=True)
+\end{lstlisting}
+\end{onlyenv}
+\vspace{1cm}
+
+\centering
+\begin{columns}
+	\begin{column}{0.4\textwidth}
+		\only<1-5>{\includegraphics[width=1\linewidth]{WattsStrogatz/network}}	
+	\end{column}
+	\begin{column}{0.6\textwidth}
+	
+	\only<2-5>{What's the adjacency Matrix?}
+	\only<2>{
+		\phantom{$\begin{pmatrix} Deborah\ D\end{pmatrix} \Rightarrow $\ \ }
+		$\begin{pmatrix} A & B & C & D \end{pmatrix} $ \\
+		\phantom{$\begin{pmatrix} Deborah\ D\end{pmatrix} \Rightarrow \begin{pmatrix} A & B \end{pmatrix}$} $\Downarrow$ \\
+		$\begin{pmatrix} Abdu\ A\\ Beate\ B\\ Cynthia\ C\\Deborah\ D\end{pmatrix} \Rightarrow
+		\begin{pmatrix}
+			\color{white}{0}& \color{white}{1}& \color{white}{1}& \color{white}{1}\\
+			& & & \\
+			& & & \\
+			& & & 
+		\end{pmatrix}$
+	}
+		
+	\only<3>{
+		\phantom{$\begin{pmatrix} Deborah\ D\end{pmatrix} \Rightarrow $\ \ }
+		$\begin{pmatrix} A & B & C & D \end{pmatrix} $ \\
+		\phantom{$\begin{pmatrix} Deborah\ D\end{pmatrix} \Rightarrow \begin{pmatrix} A & B \end{pmatrix}$} $\Downarrow$ \\
+		$\begin{pmatrix} Abdu\ A\\ Beate\ B\\ Cynthia\ C\\Deborah\ D\end{pmatrix} \Rightarrow
+			\begin{pmatrix}
+			\color{gray}{0}& 1& 1& 1\\
+			& & & \\
+			& & & \\
+			& & & 
+		\end{pmatrix}$
+	}
+	\only<4>{
+		\phantom{$\begin{pmatrix} Deborah\ D\end{pmatrix} \Rightarrow $\ \ }
+		$\begin{pmatrix} A & B & C & D \end{pmatrix} $ \\
+		\phantom{$\begin{pmatrix} Deborah\ D\end{pmatrix} \Rightarrow \begin{pmatrix} A & B \end{pmatrix}$} $\Downarrow$ \\
+		$\begin{pmatrix} Abdu\ A\\ Beate\ B\\ Cynthia\ C\\Deborah\ D\end{pmatrix} \Rightarrow
+		\begin{pmatrix}
+			\color{gray}{0}& 1& 1& 1\\
+			\color{gray}{1}&\color{gray}{0}& 0& 0\\
+			\color{gray}{1}& \color{gray}{0}& & \\
+			\color{gray}{1}& \color{gray}{0}& & 
+		\end{pmatrix}$
+	}
+	\only<5>{
+		\phantom{$\begin{pmatrix} Deborah\ D\end{pmatrix} \Rightarrow $\ \ }
+		$\begin{pmatrix} A & B & C & D \end{pmatrix} $ \\
+		\phantom{$\begin{pmatrix} Deborah\ D\end{pmatrix} \Rightarrow \begin{pmatrix} A & B \end{pmatrix}$} $\Downarrow$ \\
+		$\begin{pmatrix} Abdu\ A\\ Beate\ B\\ Cynthia\ C\\Deborah\ D\end{pmatrix} \Rightarrow
+		\begin{pmatrix}
+			\color{gray}{0}& 1& 1& 1\\
+			\color{gray}{1}& \color{gray}{0}& 0& 0\\
+			\color{gray}{1}& \color{gray}{0}& \color{gray}{0}& 1\\
+			\color{gray}{1}& \color{gray}{0}& \color{gray}{1} & \color{gray}{0}
+		\end{pmatrix}$
+	}
+\end{column}
+\end{columns}
+
+\begin{onlyenv}<6->
+Building a Watts-Strogatz Network is even easier:
+\begin{lstlisting}[basicstyle=\tiny\ttfamily, tabsize=4] 
+network = nx.watts_strogatz_graph(
+					n = N_AGENTS,    # n = How many nodes
+					k = 4, 	  	# k = How many nearest neighbours
+					p = 0.1)	# p = Probability for each link to be rewired
+		
+pos = nx.circular_layout(network)
+nx.draw(network, pos, with_labels=True)
+
+print("The adjacency matrix is: ", nx.adjacency_matrix(network))
+print("The adjacency list for agent `ag' is: ", network.adj[ag.id])
+	\end{lstlisting}
+\end{onlyenv}
+
+		\end{overlayarea}
+              \end{frame}
+
+              
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "CoronaABM"
+%%% TeX-master: "CoronaABM"
+%%% TeX-master: "CoronaABM"
+%%% End:

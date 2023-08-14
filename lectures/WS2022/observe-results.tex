@@ -1,0 +1,137 @@
+% !TeX root = CoronaABM.tex
+
+%\begin{frame}
+%	\frametitle{Observe Function}
+%	Don't show code in detail, just results \ra next slides.\\
+%	Show how to get these aggregate results (list comprehension and ask for state, then count states)
+%\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{Run and Observe Function}
+
+Goal: Perform simulation and track how many agents are in state "susceptible", "exposed", ... over time.
+\begin{overlayarea}{\linewidth}{12cm}
+\begin{onlyenv}<1>
+\begin{lstlisting}[basicstyle=\tiny\ttfamily, tabsize=6] 
+initialise() 
+network = initialise_network(agents, k_ws=6, p_ws=0.1)
+
+T_ARRAY = np.linspace(0, 400, 0.5)
+
+results = np.empty([len(T_ARRAY), len(states)])
+
+for n, t in enumerate(T_ARRAY):
+      update(t)
+      results[n, :] = observe(agents)
+\end{lstlisting}
+        
+\begin{lstlisting}[basicstyle=\tiny\ttfamily, tabsize=6] 
+      
+def observe(agents):
+      states_of_agents = [ag.state for ag in agents]
+      N_s = states_of_agents.count("susceptible")
+      N_e = states_of_agents.count("exposed")
+      ...
+      return np.array([N_s, N_e, N_ia, ...])
+\end{lstlisting}
+\end{onlyenv}
+\begin{onlyenv}<2>
+\begin{figure}
+	\centering
+	\includegraphics[width=0.8\linewidth]{outputimages_2022/AggregateResults_N-1000-2_WS(6,1e-01)_seed11}
+
+        {\small \phantom{Another\ }Outbreak in a network with $k=6$, $p = 0.2$, $n=1000$ agents of which two are exposed at $t=0$.}
+	\label{fig:aggregateresultsn-1000-2ws62e-01seed1}
+\end{figure}
+\end{onlyenv}
+\begin{onlyenv}<3>
+	\begin{figure}
+		\centering
+	\includegraphics[width=0.8\linewidth]{outputimages_2022/AggregateResults_N-1000-2_WS(6,1e-01)_seed112}
+
+                {\small \textit{Another} outbreak in a network with $k=6$, $p = 0.2$, $n=1000$ agents of which two are exposed at $t=0$.}
+		\label{fig:aggregateresultsn-1000-2ws62e-01seed1}
+	\end{figure}
+\end{onlyenv}
+\begin{onlyenv}<4>
+\begin{figure}
+	\centering
+	\includegraphics[width=0.8\linewidth]{outputimages_2022/AggregateResults_N-1000-2_WS(6,1e-01)_seed1}
+
+        {\small The model is {\color{red}stochastic}! \newline Same model configuration \ra might not lead to an outbreak at all. Model output depends on the occurrence of microscopic events.}
+\end{figure}
+\end{onlyenv}
+\end{overlayarea}
+\end{frame}
+
+\againframe<6>{overview}
+
+\begin{frame}
+	\frametitle{Validation}
+How can we verify if these results make sense? E.g.\ 
+\begin{enumerate} 
+\item \textbf{Ensemble runs}: Do many different stochastic simulation runs.
+\item \textbf{Compare with data}: For ABM, typically aggregate  indicators.\newline For example, $R_0$ in the data vs.\ mean $R_0$ in ensemble runs of the model.
+\end{enumerate}
+\pause%\begin{onlyenv}<2>
+\includegraphics[width=0.7\linewidth]{outputimages_2022/R0values_N-1000-2_WS(6,1e-01)_seed112}
+%\end{onlyenv}
+
+\end{frame}
+
+\section{Policies}
+
+\begin{frame}
+  \frametitle{Policies}
+	The major idea of our model was to design and test the impact of local policies. \\
+	\vspace{0.2cm}
+
+        What happens, for example, 
+	\begin{itemize} 
+	\item if people reduce their contacts (due to social distancing policies)?
+	\item if people keep their contacts within confined clusters (households, neighbours)?
+	\item if people reduce their infectiousness by wearing a mask?	
+	\end{itemize} 
+	
+\end{frame}
+
+\begin{frame}
+  \frametitle{Parameters of the Model}
+\begin{table}
+	\scriptsize
+\begin{tabularx}{\textwidth}{>{\tiny}p{2.5cm}|X|p{2cm}}
+	Parameter & Description & current value \\ \hline
+	FRAC\_AGE\_GROUPS & Percentage of each age group & [0.2, 0.5, 0.3]  \\
+	BASE\_I & Distribution of base infectiousness of the agents & beta(1, 3) \\
+	P\_SYMPTOMATIC & Probability to develop symptoms  & [0.1, 0.5, 0.8] \\
+	INCUBATION\_PERIOD & Distribution of the incubation time & gamma(5.807, 0.948)\\
+	CFR & Case fatality ratio for each age group & [0.0001, 0.005, 0.05] \\
+	RELATIVE\_INFECT-IOUSNESS & rel.\ strength of infectiousness for a (pre-)symptomatic and asymptomatic infections & [0.5,1,0.2] \\   
+	TIME\_I\_PRESYMPT & infectious days before symptom onset & 2  \\
+	TIME\_I\_POSTSYMPT & infectious days after symptom onset & 4  \\
+	k\_ws & Number of (nearest) neighbours in networks for nodes &  6 \\
+	p\_ws & Probability of each link to be rewired &  0.1  \\
+	N\_AGENTS & Nr of agents & 1000 \\ %  # Number of agents in total
+	N\_INFECTED\_INIT & Nr of agents set to "exposed" at t=0 & 2  \\
+\end{tabularx}
+\end{table}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Policy: Decrease $k=6$ of network to $k=4$}
+\begin{figure}
+  \only<1>{\includegraphics[width=\linewidth]{outputimages_2022/AggregateResults_N-1000-2_WS(6,1e-01)_seed4}}%
+  \only<2>{\includegraphics[width=\linewidth]{outputimages_2022/AggregateResults_N-1000-2_WS(4,1e-01)_seed4}}
+			%\Put(-40,80){\includegraphics[width=0.7\linewidth]{../../../CoronaABM/Simplified_Corona/Figures/R0values_seed2}}}
+	\end{figure}
+\end{frame}
+
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% TeX-master: "CoronaABM"
+%%% TeX-master: t
+%%% TeX-master: t
+%%% End:

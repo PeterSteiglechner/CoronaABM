@@ -1,0 +1,27 @@
+import networkx as nx
+import matplotlib.pyplot as plt
+fig = plt.figure(figsize=(2,2))
+G = nx.Graph()
+G.add_node("Abdu")
+G.add_node("Beate")
+G.add_node("Cynthia")
+G.add_node("Deborah")
+G.add_edges_from([("Abdu", "Beate"), ("Abdu", "Cynthia"), ("Abdu", "Deborah"), ("Cynthia", "Deborah")])
+pos = nx.spring_layout(G)
+nx.draw(G, pos, with_labels=True, node_color="gold")
+#fig.tight_layout()
+x_values, y_values = zip(*pos.values())
+x_max = max(x_values)
+x_min = min(x_values)
+x_margin = (x_max - x_min) * 0.5
+print(x_min, x_max)
+plt.xlim(-1.3,1.3)
+plt.ylim(-1.3,1.3)
+#plt.xlim(x_min - x_margin, x_max + x_margin+0.5)
+#fig.set_figwidth(8/2.54)
+
+#fig.tight_layout(pad=30)
+plt.savefig("network.pdf")
+plt.show()
+print(nx.adjacency_matrix(G).todense())
+print(G.adj)

@@ -1,0 +1,454 @@
+\documentclass[x11names,svgnames,table]{beamer}
+%\usetheme{sharky}
+
+\def\Put(#1,#2)#3{\leavevmode\makebox(0,0){\put(#1,#2){#3}}}
+
+\usepackage{calc}
+
+\usepackage[compatibility=false, justification=justified]{caption}    % to allow the use of \caption* i.e. caption without numbering
+
+\usepackage{amssymb}
+\usepackage[T1]{fontenc}
+
+%\usepackage[scaled]{beramono} % allows the use of textbf under texttt
+
+\usepackage{bbding} % for symbols such as \HandCuffRight
+
+\usepackage{eqnarray,amsmath}
+\usepackage{mathtools}
+
+\usepackage{forloop}
+\newcounter{ct} 
+\newcounter{ll}
+%\usepackage[table]{xcolor}  % to color rows of tables using \rowcolor{color} before the table row. 
+                                                  % colors include red, blue, black, gray, yellow and many other popular colors.
+
+\usepackage{ragged2e} % to justify itemized text
+
+\usepackage{media9}   % this to embed youtube video in the pdf as flash file 
+\usepackage{movie15} % gif
+\usepackage{animate}  % to created animated png
+
+
+% defining new commands
+\newcommand\bhline{\arrayrulecolor{blue}\hline\arrayrulecolor{black}}
+\newcommand\tg{\textcolor[gray]{0.8}}
+\newcommand\tgr{\textcolor{green}}
+\newcommand\tog{\textcolor{OliveGreen}}
+\newcommand\tpg{\textcolor{PineGreen}}
+\newcommand\tgo{\textcolor{Goldenrod}}
+\newcommand\tro{\textcolor{RedOrange}}
+\newcommand\tyo{\textcolor{YellowOrange}}
+\newcommand\tbo{\textcolor{BurntOrange}}
+\newcommand\ty{\textcolor{yellow}}
+\newcommand\tr{\textcolor{red}}
+\newcommand\tb{\textcolor{blue}}
+
+\usepackage{color}
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+\definecolor{myblue}{rgb}{0.0, 0.18, 0.65}
+
+\usepackage{listings} % for displaying programming code in LaTex (see: https://www.sharelatex.com/learn/Code_listing) 
+
+    \lstset{basicstyle=\tiny\ttfamily,  % size and style of fonts used for the code
+      backgroundcolor=\color{white},  % choose the background color
+      breaklines=true,                          % break lines when too long 
+      resetmargins=true,                   % reset the margins
+      xleftmargin=-0.45cm,                 % set the left margin
+      xrightmargin=0.0cm,                   % set the right margin
+      showspaces=false,                       % show spaces adding particular underscores
+      showstringspaces=false,             % underline spaces within strings
+      showtabs=false,                          % show tabs within strings adding 
+      escapechar=@,                             % to add LaTeX commands within the code
+      keywordstyle=\color{mymauve},  % keyword style
+      commentstyle=\color{red},           % comment style
+      %stringstyle=\color{mygreen}       % string literal style
+      tabsize=8,
+      language=python,
+      numberstyle=\tiny
+} 
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=blue,      
+    urlcolor=blue,
+}
+\urlstyle{same}
+
+\usepackage{changepage}
+\usepackage{bold-extra}
+
+\input{/home/peter/Organisatorisches/Latex_dinge/packages_beamer}
+
+% TABULARX
+\usepackage{tabularx}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+
+
+\addbibresource{CoronaABM.bib}
+
+
+\setbeamercolor{block body alerted}{bg=alerted text.fg!10}
+\setbeamercolor{block title alerted}{bg=alerted text.fg!20}
+\setbeamercolor{block body}{bg=structure!10}
+\setbeamercolor{block title}{bg=structure!20}
+\setbeamercolor{block body example}{bg=green!10}
+\setbeamercolor{block title example}{bg=green!20}
+\setbeamertemplate{blocks}[rounded][shadow]
+
+
+\title[{\color{white}Lecture 11~~--~~Agent-Based Model of Covid-19}]{Agent-Based Model of Covid-19} % An Agent-Based Model for SARS-CoV-2 transmission and containment policies
+\subtitle{Lecture 11}
+\author{Peter Steiglechner}
+\date{06 December 2022}
+
+\begin{document}
+
+\frame{
+  \maketitle 
+  \vfill
+  \centering
+  \includegraphics[width=0.5\textwidth]{images/corona}
+}
+
+\begin{frame}
+  \frametitle{So far...}
+  \centering
+  \begin{tabular}{c|c}
+    Differential Equation Models & Agent-Based Models \\ \hline
+    & \\ \pause
+    SIR & Segregation (Schelling) \\
+    Population growth & Predator-prey (rabbit-fox) \\
+    HIV-cells  &  \visible<3>{{\color{red}{Covid-19}}} \\
+    Chemostat  & \ \\
+    NPZ(D) & \ \\
+    Predator-prey & \ \\
+  \end{tabular} 
+\end{frame}
+
+\begin{frame}<1-5>[label=Outline]
+  \frametitle{What we will cover today.}
+	\setbeamercovered{transparent}
+	\begin{itemize}%[<+-|alert@+>]
+	\item<1,2> Agent-Based Model that simulates the spread of Covid-19 in a small society consisting of three age groups and realistic, stochastic infection dynamics. Understand how a model like this can be used to design policies.
+	\item<1,3> \textit{Concept 1+2:} Parametrisation of ABMs: draw heterogeneous agent features from (discrete/continuous) distributions
+	\item<1,4> \textit{Concept 3:} Interaction in ABMs: network of agents
+        \item<1,5> \textit{Concept 4:} Event scheduling in ABMs
+\end{itemize}
+\end{frame}
+
+
+\input{Covid-intro}
+
+
+\begin{frame}
+  \frametitle{\textbf{Concept 0 Summary:}}
+\begin{block}{Consider ABM when:}
+	\begin{itemize} 
+	\item Microscopic behaviour can cause \textbf{emergent} macroscopic phenomena. \newline
+	{\color{gray} Example: Fish swarm or bird flock}
+	\item People, space, or responses (entities or processes) are \textbf{non-homogeneous} with potentially non-linear feedbacks. \ra We can't reduce the population to a representative agent (\textbf{irreducibility})
+	\newline 
+	{\color{gray}\textit{Il mondo bello per que se vario.}}
+	\item \textbf{Uncertainty} and \textbf{randomness} play dominant roles. 
+	\item Context matters (\textbf{non-ergodic system})
+	\end{itemize}
+\end{block}
+	{\footnotesize  `The end of theory' by \citet{bookstaber_end_2017}. A very enlightening book about the paradigm shift induced by Agent-Based Modelling}
+\end{frame}
+
+\againframe<1>{Outline}
+
+
+\begin{frame}<1-3>[label=overview]
+  \frametitle{Design an ABM - I}
+  {\small
+    Let's think of an ABM (Slide 16/47 from Lecture 9 on ABM)
+	\begin{enumerate}
+	\item Specific problem to be solved by the ABM. \newline
+	\visible<2->{\small {\color{red} How do a few infected agents affect a small, interconnected, simple society split into three age groups? What are the impacts of certain local policies?}}
+	\item Design of agents and their static/dynamic attributes.%
+	\item Design of an environment and the way agents interact with it.
+	\item Design of agents' behaviour%
+	\item Design of agent mutual interactions.%
+	\item Availability of data. \newline
+          \visible<3->{\small {\color{red} Data informs the parametrisation}}
+	\item Method of model validation. \newline
+	\only<3>{\small {\color{red} ...}}\visible<4->{\small {\color{red} Compare with model and empirical reproductive number $R_0$}}
+      \end{enumerate}
+     }
+      \end{frame}
+
+      \begin{frame}[label=abmbuild]
+        \frametitle{Design an ABM - II}
+        {\small Let's create an ABM (Slide 17/47 from Lecture 9 on ABM)
+        \begin{enumerate}
+        \item<1-> Design the data structure to store the attributes of the
+          agents. \newline
+         \visible<2->{{\color{red} class \textit{agent()} with attributes \textit{age, health\_state}}}
+        \item<1-> \sout{Design the data structure to store the states of the
+          environment.}
+        \item<1-> \sout{Describe the rules for how the environment behaves on
+          its own.}
+        \item<1-> \sout{Describe the rules for how agents interact with the
+            environment.}
+      \item<1-> Describe the rules for how agents behave on their own. \newline
+          \visible<3->{{\color{red} when healthy: stay healthy \newline when exposed: become infected \newline when infected: \textit{health\_state} changes over time following stochastic, age-dependent patterns.}}
+        \item<1-> Describe the rules for how agents interact with each
+          other. \newline 
+          \visible<4->{{\color{red} agents are connected through a social network. They meet `physically' with their neighbours and may infect each other.}}
+        \end{enumerate}
+        }
+      \end{frame}
+
+      \begin{frame}[label=codeoverview,fragile]
+        \frametitle{ABM base units}
+\begin{lstlisting}[basicstyle=\tiny\ttfamily, tabsize=6]%
+
+class agent:
+    ...
+
+def initialise():
+    ...
+
+def initialise_network():
+    ...
+
+def update():
+    # (1) agents update health status
+    # (2) interactions using catch_virus, infect_others, 
+    ...
+
+def catch_virus(ag, t_exposure):
+    ...
+
+def infect_others(ag, t_exposure):
+    ...
+
+# Run
+initialise()
+for t in range(T):
+    update()
+observe()
+\end{lstlisting}
+
+\end{frame}
+      
+      \input{agent-and-attributes}
+
+\begin{frame}[fragile]
+\frametitle{\textbf{Concept 1 and 2 Summary}}
+\begin{block}{Drawing from distributions}
+\begin{itemize}
+	\item We can create heterogeneous agents (or heterogeneous infection dynamics) by drawing independent parameters or properties from probability distributions (which are inferred from data) whenever we initialise an agent (or an infection) ...
+	\item For discrete choices: 
+\begin{lstlisting}[basicstyle=\tiny\ttfamily, tabsize=6] 
+for ag in range(N_AGENTS):
+	ag = Agent()
+	ag.property1 = np.random.choice(all_choices, p = probs_for_choices)
+\end{lstlisting}
+	\item For continuous random variables (here, normally distributed):
+\begin{lstlisting}[basicstyle=\tiny\ttfamily, tabsize=6] 
+import scipy.stats as stats
+for ag in range(N_AGENTS):
+	ag = Agent()
+	ag.property2 = stats.norm(mu, sigma).rvs()
+	# distributed according to stats.norm(mu, sigma).pdf(x)
+\end{lstlisting}
+\end{itemize}
+\end{block}
+%Repetition: When do we want to use this?
+
+\end{frame}
+
+\againframe<4>{abmbuild}
+
+%\frame{BREAK}
+
+\againframe<3-4>{Outline}
+
+\section{Concept 3: Networks}
+\input{network-base}
+
+\begin{frame}[fragile]
+\frametitle{\textbf{Concept 3 Summary}}
+\begin{block}{Social Network}
+\begin{itemize} 
+\item Social networks can be used to represent communication or (physical) interaction between agents
+\item Topology of the network matters (especially clustering and distribution of node degrees)
+\item The python package \textit{networkx} is wonderful and simple to use:
+\begin{lstlisting}[basicstyle=\tiny\ttfamily, tabsize=6]
+import networkx as nx
+G = nx.watts_strogatz_graph(n=100, k=4, p=0.1)
+nx.draw(G)
+print("Agents have contacts to the nodes/agents with these indices: ", G.adj)
+\end{lstlisting}
+\end{itemize}
+\end{block}
+\end{frame}
+
+\againframe<5>{Outline}
+
+\againframe<4>{abmbuild} 
+
+\section{Concept 4: Event scheduling in ABM}
+
+\begin{frame}[t]
+  \frametitle{Event scheduling decisions}
+  \begin{tabularx}{\textwidth}{l|X|X}
+    & queue & sampling  \\ \hline
+    asynchronous & \ 
+    \visible<2->{all agents are updated once per time step after each other} & \
+    \visible<4->{$n$ agents (including duplicates) are updated in one time step after each other }  \\ \hline
+    synchronous & \
+    \visible<3->{all agents are updated simultaneously} & \
+    \visible<5->{ \sout{$n$ agents (including duplicates) are updated simultaneously}} \\ \hline
+  \end{tabularx}
+  \vfill
+  
+  \only<2>{Asynchronous queue}
+  \only<3>{Synchronous queue}
+  \only<4>{Asynchronous sampling}
+  \visible<2-4>{\begin{itemize}
+    {\small 
+  \item \only<2>{What? each agent updates at the same frequency but after each other. Agents potentially observe what others did right before them.}
+    \only<3>{What? all agents update at the same time (without knowing what the others do at this point in time)}
+     \only<4>{What? agents update at different frequencies and after each other. Agents potentially observe what others did right before them.}
+       \item \only<2>{Examples: well moderated panel discussion, stock market \ra herding}
+         \only<3>{Example: election, quiz night \newline \ }
+          \only<4>{Example: social media posting, harvesting/hunting (fox-rabbit, Schelling)}
+    }
+    \end{itemize}
+}
+      \only<6>{For Covid-19 model: \textbf{asynchronous queue}.}
+\end{frame}
+
+
+
+\begin{frame}
+  \frametitle{\textbf{Concept 4 Summary}}
+  \begin{block}{Event scheduling}
+    \begin{itemize}
+    \item Synchronous vs.\ asynchronous updating: \newline {\small (1) Do agents act simultaneously or after each other? \newline (2) What do they know when they are updated?}
+    \item Queue vs. sampling: \newline {\small Do agents update at the same frequency or different frequencies?}
+    \item Sometimes, event scheduling can make a huge difference (\ra herding), most often it is irrelevant.
+    \end{itemize}
+  \end{block}
+
+  \pause
+  \vfill
+  
+  \begin{itemize}
+  {\footnotesize
+    \item Attention: When we have different types of agents (e.g.\ fox/rabbit), think about relative update frequencies.
+  \item Note: There are much more options (e.g.\ adaptive time: foxes will try to harvest more often when they are unsuccessful)
+  \item Note: when agents die, the number of updates per time step change.
+  }
+  \end{itemize}
+  
+  \end{frame}
+
+  
+
+\input{update}
+
+\input{observe-results}
+
+\againframe<1>{Outline}
+      
+
+\begin{frame}
+  \frametitle{Potential Project?}
+      \addtolength{\leftmargini}{\labelsep -.75cm}
+\begin{itemize}
+	\item Basics:
+	\begin{itemize} 
+%	\item Download, read and understand the code
+%	\item Run the model with several \textit{seeds} (ensemble run)
+	\item Change the network topology and properties %(e.g.\ \textit{k\_ws} or \textit{p\_ws} of the Watts-Strogatz Network).
+          What policy could this correspond to?
+	\item Try an entirely different network %(\ra \textit{networkx} documentation).
+%        \end{itemize}
+%        \item Basic 2:
+%        \begin{itemize}
+%	\item Create distributions for \textit{incubation period} or \textit{base infectiousness}, draw samples from them, and plot their PDF and the histogram of frequencies (see Concept 2). \newline  {\scriptsize Note: You may want to create a separate script for this.}
+	\item Change distributions for \textit{incubation period} or \textit{base infectiousness} (e.g.\ decrease the incubation period (Omikron?) or make all agents equally infectious).
+          %\newline \ra Find something that you find interesting!
+%	\end{itemize} 
+	\end{itemize} 
+%}
+        \item Policies
+        %\only<2>{
+            \begin{itemize}
+%	\item Intermediate:
+%	\begin{enumerate}
+	\item Implement a soft isolation policy: when an agent turns symptomatic, she/he will quarantine and strongly reduce contacts. %\newline
+	%{\scriptsize Hint: you might want to add a condition in the \textit{update} function that reduces the number of contacts when an isolating, symptomatic agent is about to infect others.}
+	\item This policy may not apply immediately, but only after the outbreak has been noticed by policy makers. Implement a delay mechanism. How does the delay impact the effectiveness of a policy?
+%	\end{enumerate} 
+%	\end{itemize}
+%}
+%\only<3>{
+%	\begin{itemize}
+%	\item Hard (if you feel like exploring):
+%	\begin{itemize} 
+	\item Implement your own (time-dependent) policy strategy. This could include
+	%\begin{itemize} 
+	%\item
+          (1) dynamic changes in the network or 
+          % \item
+          (2) different behaviour of each age-group.
+	%\end{itemize}
+	\item Assume that a few agents are defectors. They do not adhere to your policy. What fraction of defectors makes your policy useless?
+	\end{itemize} 
+	\end{itemize}
+	\vfill 
+%	{\small Note: Whenever you program anything, make sure you test (for yourself), e.g.\ by varying crucial parameters and asking yourself whether the results meet your expectation.} \\
+%}
+%\vfill 
+%{\footnotesize Deadline: Tuesday, {\color{red} 6th December 2022}, send relevant code, conclusions and figures to \href{mailto:peter.steiglechner@leibniz-zmt.de}{peter.steiglechner@leibniz-zmt.de}.
+%  \newline As always, please engage if you have any questions or ideas to discuss. }
+\end{frame}
+
+\begin{frame}{References}
+	\renewcommand*{\bibfont}{\tiny} 
+\printbibliography
+\end{frame}
+
+\begin{frame}
+	\frametitle{Further reading}
+	\begin{thebibliography}{10}
+		\tiny
+		\beamertemplatebookbibitems % block for books
+		\bibitem[Sayama, 2015]{SAYA15}
+		Hiroki Sayama~2015
+		\newblock {\em Introduction to the Modeling and Analysis of
+			Complex Systems}
+		\newblock Open SUNY Textbooks 
+
+		
+		\beamertemplatearticlebibitems % block for articles
+		
+		\beamertemplateonlinebibitems % block for online material
+		\bibitem[NetworkX 2.0, 2017]{NX2.0}
+		NetworkX Reference 2.0
+		\newblock \url{https://networkx.github.io/documentation/stable/_downloads/networkx_reference.pdf}
+		\newblock Sep 20, 2017	
+		
+	\end{thebibliography}
+	
+\end{frame}
+
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% TeX-master: t
+%%% TeX-master: t
+%%% End:
