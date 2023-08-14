@@ -1,0 +1,879 @@
+\begin{frame}<1-2>[label=Init, fragile]
+\frametitle{Agent and Initialisation}
+\begin{overlayarea}{\linewidth}{12cm}
+\begin{onlyenv}<1>
+\begin{lstlisting}[basicstyle=\tiny\ttfamily, tabsize=6] 
+	
+	
+class Agent:
+	pass
+\end{lstlisting}
+An empty class.
+\end{onlyenv}
+\begin{onlyenv}<2>
+\begin{lstlisting}[basicstyle=\tiny\ttfamily, tabsize=6] 
+N_AGENTS = 1000  # Number of agents in total
+
+class Agent:
+	pass
+
+def initialise():
+	global agents
+	agents = []
+
+	for id in range(N_AGENTS):
+		ag = Agent()
+		ag.id = id					# Unique ID
+		ag.state = "susceptible"	# health state	
+		ag.group = ???				# Age-/Rsik Group 
+		agents.append(ag)
+\end{lstlisting} 
+Create all agents. \newline
+\textbf{Problem}:   We want e.g. 20\% children, 50\% adults, 30\% high-risk people in our society.
+\newline
+\ 
+\end{onlyenv}
+\begin{onlyenv}<3>
+\begin{lstlisting}[basicstyle=\tiny\ttfamily, tabsize=6] 
+N_AGENTS = 1000  # Number of agents in total
+
+#  Group: 	0 = children (no risk)  	--> 20%
+#		1 = adults (small risk)		--> 50%
+#		2 = high-risk group		--> 30%
+RISKGROUPS = [0, 1, 2] 
+FRAC_RISKGROUPS = [0.2, 0.5, 0.3]  
+
+class Agent:
+	pass
+
+def initialise():
+	global agents
+	agents = []
+
+	for i in range(N_AGENTS):
+		ag = Agent()
+		ag.id = i				# Unique ID
+		ag.state = "susceptible"	# health state	
+		ag.group = np.random.choice(RISKGROUPS, FRAC_RISKGROUPS) 
+		agents.append(ag)
+\end{lstlisting} 
+\ \newline
+\textbf{Problem}:  We want e.g. 20\% children, 50\% adults, 30\% high-risk people in our society.
+\newline
+\quad \Checkmark Draw from discrete probability distribution for each agent.
+\end{onlyenv}
+\begin{onlyenv}<4>
+\begin{lstlisting}[basicstyle=\tiny\ttfamily, tabsize=6] 
+N_AGENTS = 1000  # Number of agents in total
+
+#  Group: 	0 = children (no risk)  	--> 20%
+#		1 = adults (small risk)		--> 50%
+#		2 = high-risk group		--> 30%
+RISKGROUPS = [0, 1, 2] 
+FRAC_RISKGROUPS = [0.2, 0.5, 0.3]  
+
+class Agent:
+	pass
+
+def initialise():
+	global agents
+	agents = []
+
+	for i in range(N_AGENTS):
+		ag = Agent()
+		ag.id = i				# Unique ID
+		ag.state = "susceptible"	# health state	
+		ag.group = np.random.choice(RISKGROUPS, FRAC_RISKGROUPS) 
+		agents.append(ag)
+\end{lstlisting} 
+\ \newline
+\textbf{Problem}:  We want e.g. 20\% children, 50\% adults, 30\% high-risk people in our society.
+\newline
+\quad \Checkmark Draw from discrete probability distribution for each agent. \newline
+\Put(60,280){\includegraphics[width=0.9\linewidth]{images/DistGroups}}
+\end{onlyenv}
+\begin{onlyenv}<5>
+\begin{lstlisting}[basicstyle=\tiny\ttfamily, tabsize=6] 
+N_AGENTS = 1000  # Number of agents in total
+N_INFECTED_INIT = 2  # Number of agents in state "exposed" at t=0.
+
+class Agent:
+	pass
+
+def initialise():
+	global agents
+	agents = []
+
+	for id in range(N_AGENTS):
+		ag = Agent()
+		ag.id = id					# Unique ID
+		ag.state = "susceptible"	# health state	
+		ag.group = np.random.choice(RISKGROUPS, FRAC_RISKGROUPS) 
+		agents.append(ag)
+
+	# Let N_INFECTED_INIT randomly chosen agents catch the virus at t=0
+	symptomatic_agents = np.random.choice(agents, size=N_INFECTED_INIT)
+	for ag in symptomatic_agents:
+		catch_virus(ag, 0)		# agent ag catches virus at time 0.
+
+	return
+\end{lstlisting} 
+Infect a few randomly selected agents. (we'll define function catch\_virus in the next slides)
+\end{onlyenv}
+\end{overlayarea}
+\end{frame}
+
+
+%\begin{frame}[fragile]
+%\frametitle{The agent}
+%\begin{overlayarea}{\linewidth}{12cm}
+%\begin{onlyenv}<1>
+%\begin{lstlisting}[basicstyle=\tiny\ttfamily, tabsize=6] 
+%class Agent:
+%	""" define an agent and its properties """
+%\end{lstlisting}
+%\end{onlyenv}
+%\begin{onlyenv}<2>
+%\begin{lstlisting}[basicstyle=\tiny\ttfamily, tabsize=6] 
+%class Agent:
+%	""" define an agent and its properties """
+%	def __init__(self, _id):
+%		""" initialise Agent """
+%		self.id = _id		# Unique ID of an agent, Track the object!
+%		self.state = "susceptible"	 	# health: susceptible to the virus
+%\end{lstlisting} 
+%	Any (more complex) class should have a "init"-function.\\
+%	When we create an object of that class, the function "self.\_\_init\_\_()" is automatically called (with the arguments provided, here \_id=0). \\
+%\begin{lstlisting}[basicstyle=\tiny\ttfamily, tabsize=6] 
+%ag = Agent(0)	# implicitly self.__init__(0) is called
+%ag.id == 0 
+%\end{lstlisting} 
+%The first argument, "self", refers to the "self" of the current object, does not need to be passed.\\
+%To retrieve a variable (or call a function) \textit{within} the class, we need to refer to "self": 
+%\begin{lstlisting}[basicstyle=\tiny\ttfamily, tabsize=6] 
+%self.id
+%self.__init__()
+%\end{lstlisting} 	
+%\end{onlyenv}
+%\begin{onlyenv}<3>
+%\begin{lstlisting}[basicstyle=\tiny\ttfamily, tabsize=6] 
+%class Agent:
+%	""" define an agent and its properties """
+%	def __init__(self, _id):
+%		""" initialise Agent """
+%		self.id = _id		# Unique ID of an agent
+%		self.state = "susceptible"	 	# health: susceptible to the virus
+%		self.group =  		# age-/risk- group of the agent
+%\end{lstlisting} 
+%\textbf{Problem}: \newline
+%\quad We want e.g. 20\% children, 50\% adults, 30\% elderly in our society. How can we assign a group to any random agent to obtain such a society?
+%\newline
+%\quad \Checkmark Draw from probability distribution whenever a new agent is initiated.
+%\end{onlyenv}
+%\end{overlayarea}
+%\end{frame}
+
+\section{Concept 1: Drawing from Discrete Distributions}
+%\subsection{Concept 1: Discrete Distributions}
+\begin{frame}[fragile]
+\frametitle{Concept 1: Discrete Distributions: Simple Example}
+\begin{example}
+Problem: We want e.g. equal male and female proportions (50\% each) in our society. How can we assign a sex to any random agent to obtain such a society? \newline  \ \newline 
+\pause \quad \Checkmark For each agent randomly draw a sex with probability 50\% \ra Use the function \textit{\color{red} np.random.choice(options, probability, size)} that chooses between options with given probabilities.
+\end{example}
+
+\begin{lstlisting}[basicstyle=\tiny\ttfamily, tabsize=6]
+for ag in agents:
+	ag.sex = np.random.choice(
+		["male", "female"]	# List/Array of possible options
+		p=[0.5, 0.5], 		# Probabilities assigned to these 
+		size=1			# Number of draws (default=1)
+	)
+\end{lstlisting}
+\end{frame}
+
+\againframe<3->{Init}
+
+%\begin{frame}[fragile]
+%\frametitle{The agent - groups from distribution}
+%\begin{overlayarea}{\linewidth}{11cm}
+%\begin{onlyenv}<1->
+%\begin{lstlisting}[basicstyle=\tiny\ttfamily, tabsize=6] 
+%#  Group: 	0 = children (risk-free)  	--> 20%
+%#		1 = adults (small risk)		--> 50%
+%#		2 = high-risk group		--> 30%
+%RISKGROUPS = [0, 1, 2] 
+%FRAC_RISKGROUPS = [0.2, 0.5, 0.3]  
+%
+%class Agent:
+%	""" define an agent and its properties """
+%	def __init__(self, _id):
+%		""" initialise Agent """
+%		self.id = _id	# Unique ID of an agent
+%		self.state = "susceptible"	 	# health: susceptible to the virus
+%		self.group = np.random.choice(RISKGROUPS, p=FRAC_RISKGROUPS)				
+%\end{lstlisting} 
+%\end{onlyenv}
+%\begin{onlyenv}<2->
+%	\centering
+%	\includegraphics[width=0.9\linewidth]{images/DistGroups}
+%\end{onlyenv}
+%\end{overlayarea}
+%\end{frame}
+
+
+
+\section{Concept 2: Drawing from Continuous Distributions}
+
+\begin{frame}{Concept 2: Continuous Distributions}
+	\begin{block}{Random Variable}
+	\begin{overlayarea}{\linewidth}{12cm}
+	\only<1->{
+	\bi
+	\item Random Variable $x$
+	\item Probability Distribution (or Probability Density Function PDF): $p(x)$ or ${\rm dist}_{\rm PDF}(x)$
+	\item Needs to integrate to 1: $\int_{-\infty}^{\infty} \ p(x) \ dx = 1$
+	\item Now we simply sample from this distribution!
+	\ei
+	}
+	%\includemovie{5cm}{2cm}{images/drawingfromdist.gif}
+	%\animategraphics[loop, autoplay, width=0.9\textwidth]{1}{images/draw-}{0}{9} % TODO! THIS DOESN'T WORK.
+	\only<2>{\includegraphics[width=0.9\textwidth]{images/draw-0}}
+	\only<3>{\includegraphics[width=0.9\textwidth]{images/draw-1}}
+	\only<4>{\includegraphics[width=0.9\textwidth]{images/draw-2}}
+	\only<5>{\includegraphics[width=0.9\textwidth]{images/draw-3}}
+	\end{overlayarea}
+	\end{block}
+\end{frame}
+
+\begin{frame}{Concept 2: Repetition}
+	This is exactly what we have done for both previous ABMs in Lecture 10 and 11: \\ \ \\
+	Agents (e.g.\ foxes and rabbits) were randomly spawned on a 2D space $(x, y)$ with $x, \, y \ \in \  [0, 1]$.
+	This is called the \textit{Uniform Distribution}. Each allowed value for the random variables $x$ and $y$ (i.e.\ between $0$ and $1$) is equally likely.
+	\begin{center}
+	\includegraphics[width=0.3\linewidth]{images/uniform_xy}
+	\end{center}
+	
+\end{frame}
+
+
+
+\begin{frame}{Concept 2: Common cont.\ distributions}
+%	\begin{overlayarea}{\linewidth}{12cm}
+\only<1>{
+	\begin{block}{Uniform Distribution}
+	\includegraphics[width=0.9\textwidth]{images/UnifDist}
+	
+	\begin{tabularx}{\textwidth}{L{1.3cm}|L{6.5cm}|L{2cm}}
+		What & continuous, bounded range (maximum and minimum is known) & \\ \hline
+		PDF & $\mathcal{U}(x_{\rm min}, x_{\rm max}) = \frac{1}{x_{\rm max} - x_{\rm min}}$ & \\ \hline
+		Usage & Uninformative, when nothing is known about the random variable & 	
+	\end{tabularx}
+	\end{block}
+	}
+\only<2>{
+	\begin{block}{Gaussian/Normal Distribution}
+	\includegraphics[width=0.9\textwidth]{images/GaussDist}
+	
+	\begin{tabularx}{\textwidth}{L{1.3cm}|L{6.5cm}|L{2cm}}
+What & continuous, infinite range & \\ \hline
+PDF & $\mathcal{N}(\mu, \sigma) = \frac{1}{\sqrt{2 \pi \sigma^2}} \cdot \exp \left(-\frac{(x-\mu)^2}{2\sigma^2}\right)$ & \ra very easy to use analytically \\ \hline
+Usage & Most often observed in nature \ra Law of large numbers. & \\	
+	\end{tabularx}
+\end{block}
+}
+
+\only<3>{
+	\begin{block}{Delta Distribution}
+	\includegraphics[width=0.9\textwidth]{images/DeltaDist}
+
+\begin{tabularx}{\textwidth}{L{1.3cm}|L{6.5cm}|L{2cm}}
+	What & continuous, inifinte/bounded range & \\ \hline
+PDF & $\delta(\tilde{x}) = \delta_{\tilde{x}} = \begin{cases}
+	\infty \text{ if } x=\tilde{x} \\ 0 \text{ else}
+\end{cases}$ & (integral is 1 per def.)\\ \hline
+Usage & We know the value for sure! We use this whenever we set a parameter to a fixed value without uncertainty. & 
+\end{tabularx}
+\end{block}
+}
+
+\only<4>{
+\begin{block}{Gamma Distribution}
+\begin{columns}
+	\begin{column}{0.3\textwidth}
+		\includegraphics[width=1\textwidth]{images/GammaDist} 
+		{\scriptsize$\Gamma(5.9807,\ 0.948)$ }
+	\end{column}
+	\begin{column}{0.7\textwidth}
+				\bi \item $x$ semi-bounded $[0, \infty]$
+				\item often used as distribution "close to Gaussian with long tail" (e.g.\ salary of people) \ei
+	\end{column}
+\end{columns}
+\end{block}
+
+\begin{block}{Beta Distribution}
+\begin{columns}
+	\begin{column}{0.3\textwidth}
+		\includegraphics[width=1\textwidth]{images/BetaDist} 	
+				{\scriptsize	${\rm Beta}(1,3)$} 
+	\end{column}
+	\begin{column}{0.6\textwidth}
+	\bi \item $x$ bounded between $[0,1]$ \ei
+	\end{column}
+\end{columns}
+\end{block}
+
+	{\tiny \ra There're soo many distributions. Wikipedia is informative and well structured 
+	\url{https://en.wikipedia.org/wiki/List_of_probability_distributions}}
+}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Concept 2: Python Package "scipy.stats"}
+\begin{onlyenv}<1>
+\begin{block}{Scipy Stats}
+\bi 
+\item \lstinline|import scipy.stats as stats|
+\item Create distribution e.g. via \lstinline|stats.norm(mu, sigma)|
+\item 
+\item 
+\ei
+\end{block}
+\textbf{Create distribution:}
+\begin{lstlisting}[basicstyle=\tiny\ttfamily, tabsize=6]
+import scipy.stats as stats
+
+mu = 1.2
+sigma = 0.2
+some_normal_dist = stats.norm(mu, sigma)
+\end{lstlisting}
+\bi 
+\item For other distributions simply replace "norm" e.g. with "beta" and look up what parameters you need to specify!! 
+\item {\scriptsize (as always in python) \url{https://docs.scipy.org/doc/scipy/reference/stats.html} 
+(incl examples and explanations of the parameters to specify, \ldots)}
+\ei
+\end{onlyenv}
+\begin{onlyenv}<2>
+\begin{block}{Scipy Stats}
+\bi 
+\item \lstinline|import scipy.stats as stats|
+\item Create distribution e.g. via \lstinline|stats.norm(mu, sigma)|
+\item Probability Density Function via \lstinline|.pdf(x)|
+\item 
+\ei
+\end{block}
+
+%\begin{block}
+\textbf{Get the PDF:}
+\begin{lstlisting}[basicstyle=\tiny\ttfamily, tabsize=6]
+x = np.linspace(-2,2)
+plt.plot(x, some_normal_dist.pdf(x))
+plt.title('PDF of a normal distribution with mu='+str(mu)+', sigma='+str(sigma))
+plt.show()
+\end{lstlisting}
+\begin{center}
+	\includegraphics[width=0.6\linewidth]{images/GaussDist_2}
+\end{center}
+\end{onlyenv}
+\begin{onlyenv}<3>
+\begin{block}{Scipy Stats}
+\bi 
+\item \lstinline|import scipy.stats as stats|
+\item Create distribution e.g. via \lstinline|stats.norm(mu, sigma)|
+\item PDF via \lstinline|.pdf(x)|
+\item Sampling via \lstinline|.rvs(samplesize)|
+\ei
+\end{block}
+
+\textbf{Draw samples from the distribution:}
+\begin{lstlisting}[basicstyle=\tiny\ttfamily, tabsize=6]
+samples = some_normal_dist.rvs(100)  # Argument = Nr of samples 
+plt.hist(samples)
+plt.xlabel("x")
+plt.ylabel("Frequency")
+plt.title("Histogram of samples")
+plt.show()
+\end{lstlisting}
+
+\begin{center}
+		\includegraphics[width=0.6\linewidth]{images/rvs}
+\end{center}
+
+\end{onlyenv}
+\end{frame}
+
+%\begin{frame}[nonumber]
+%Back to the Agents and Covid-19!
+%\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Back to the agent}
+\begin{overlayarea}{\linewidth}{12cm}
+\begin{onlyenv}<1-7>
+%\begin{lstlisting}[basicstyle=\tiny\ttfamily, tabsize=6] 
+%class Agent(_id):
+%	""" define an agent and its properties """
+%	def __init__(self, _id):
+%		""" initialise Agent """
+%
+%		# General Properties
+%		self.id = _id	# Unique ID of an agent
+%		self.state = "susceptible"	 	# health: susceptible to the virus
+%		self.group = np.random.choice(RISKGROUPS, p=FRAC_RISKGROUPS)	
+%\end{lstlisting}
+We have defined some \textbf{general properties} for an agent. When the agent is infected, it will need further, \textbf{infection-specific properties}:
+\be
+\item<2-7> Time of exposure
+\item<3-7> Symptomatic or asymptomatic?
+\item<4-7> How long is the incubation period? When do symptoms begin?
+\item<5-7> From when to when is the agent infectious?
+\item<6-7> Will the agent die from the infection?
+\item<7-7> How infectious is the agent? Is the agent a superspreader?
+\ee
+\end{onlyenv}
+
+%\begin{onlyenv}<8>
+%\begin{lstlisting}[basicstyle=\tiny\ttfamily, tabsize=6] 
+%class Agent(_id):
+%	""" define an agent and its properties """
+%	def __init__(self, _id):
+%		""" initialise Agent """
+%		
+%		# General Properties
+%		self.id = _id	# Unique ID of an agent
+%		self.state = "susceptible"	 	# health: susceptible to the virus
+%		self.group = np.random.choice(RISKGROUPS, p=FRAC_RISKGROUPS)	
+%		
+%		# infection specific attributes (for later)
+%		# np.nan --> "not a number", i.e. they are not yet defined.
+%		
+%		# (float) time of catching the virus
+%		self.t_e = np.nan  			
+%		# (Bool) whether infection is symptomatic or not
+%		self.symptomatic = np.nan	
+%		# (float) time of onset of symptoms
+%		self.t_onset_symptoms = np.nan	
+%		# (Bool) whether the agent dies from the infection
+%		self.fatal_case = np.nan	
+%		# ([float, float]) start and end time of the infectious period
+%		self.infectious_period = [np.nan, np.nan]
+%		# (float in [0,1]) how infectious is the agent	
+%		self.base_infectiousness = np.nan
+%		
+%		return 
+%\end{lstlisting}
+%\end{onlyenv}
+\end{overlayarea}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Catch the virus -- Determine course of infection}
+\begin{overlayarea}{\linewidth}{12cm}
+\begin{onlyenv}<1>
+\begin{lstlisting}[basicstyle=\tiny\ttfamily, tabsize=6] 
+
+
+
+def catch_virus(ag, t_exposure):
+    ag.state = "exposed"  
+    ag.t_e = t_exposure
+\end{lstlisting}
+\vspace{0.5cm}
+\fbox{\textbf{1}:} The agent \textit{ag} catches the virus (\textit{catch\_virus})at time \textit{t=t\_exposure}, i.e.\ after being infected with the virus by another agent.
+First, the \textit{state} of the agent changes to "exposed" and the time of infection is saved in the internal variable \textit{t\_e}.
+\end{onlyenv}
+
+\begin{onlyenv}<2>
+\begin{lstlisting}[basicstyle=\tiny\ttfamily, tabsize=6] 
+P_SYMPTOMATIC = [0.1, 0.5, 0.8] 
+
+
+def catch_virus(ag, t_exposure):
+	...
+    p_s = P_SYMPTOMATIC[ag.group]
+    ag.symptomatic = np.random.choice([True, False], p=[p_s, 1 - p_s])
+\end{lstlisting}
+\vspace{0.5cm}
+\fbox{\textbf{2}:} We determine randomly whether the course of the infection is going to be symptomatic (\textit{ag.symptomatic = True}) or asymptomatic (\textit{ag.symptomatic = False}) (\HandRight\ \  Discrete Distribution for two options). \\
+The probability depends on the agent's age-/riskgroup.
+\end{onlyenv}
+\begin{onlyenv}<3>
+\begin{lstlisting}[basicstyle=\tiny\ttfamily, tabsize=6] 
+INCUBATION_PERIOD_DIST = stats.gamma(5.807, 0.948)
+
+
+def catch_virus(ag, t_exposure):
+	...
+	incubation_period = INCUBATION_PERIOD.rvs()
+\end{lstlisting}
+\vspace{0.5cm}
+\fbox{\textbf{3}:} Draw one incubation period from gamma distribution (fitted to data by \citet{lauer_incubation_2020}) (\HandRight\ \  Draw from continuous  distr.). 
+\begin{center}
+	\includegraphics[width=0.6\textwidth]{images/GammaDist_}
+\end{center}
+{\tiny Note: For asymptomatic cases the incubation has no meaning. It's just used as a characteristic value to for the infectiousness period (next slide).}
+\end{onlyenv}
+
+\begin{onlyenv}<4>
+\begin{lstlisting}[basicstyle=\tiny\ttfamily, tabsize=6] 
+
+
+
+def catch_virus(ag, t_exposure):
+	...
+	if ag.symptomatic:
+		# Symptomatic Case
+		ag.t_onset_symptoms = ag.t_e + incubation_period
+	else:
+		# Asymptomatic Case
+		ag.t_onset_symptoms = np.nan
+\end{lstlisting}
+\vspace{0.5cm}
+\fbox{\textbf{3}:} Symptom onset after incubation period (if \textit{ag}'s infection will be symptomatic), otherwise, ignore.
+\end{onlyenv}
+\begin{onlyenv}<5>
+\begin{lstlisting}[basicstyle=\tiny\ttfamily, tabsize=6] 
+TIME_I_PRESYMPT = 2
+TIME_I_POSTSYMPT = 4
+
+def catch_virus(ag, t_exposure):
+	...
+	ag.infectious_period = [
+        ag.t_e + incubation_period - TIME_I_PRESYMPT,
+        ag.t_e + incubation_period + TIME_I_POSTSYMPT
+    ]
+\end{lstlisting}
+\vspace{0.5cm}
+\fbox{\textbf{4}:} The agent is only infectious a few days before and after the onset of symptoms. \\
+Here, I assume, that the period in which \textit{asymptomatic} people are infectiousness is similarly distributed as for the symptomatic cases. \\
+\begin{center}
+	\includegraphics[width=0.7\linewidth]{images/single_agents_sickness}
+\end{center}
+\end{onlyenv}
+
+\begin{onlyenv}<6>
+\begin{lstlisting}[basicstyle=\tiny\ttfamily, tabsize=6] 
+CFR = [0.0001, 0.005, 0.05] 	# for each age-/riskgroup
+
+
+def catch_virus(ag, t_exposure):
+	...
+	if ag.symptomatic:
+		# Symptomatic Case, might die
+		p_d = CFR[ag.group]
+		ag.fatal_case = np.random.choice([True, False], p=[p_d, 1-p_d])
+	else:
+		# Asymptomatic Case, can not die
+		ag.fatal_case = False
+\end{lstlisting}
+\fbox{\textbf{5}:} If the agent is symptomatic, there's a chance the agent might die (\textit{ag.fatal\_case = True}).\\
+The probability depends strongly on the age-/riskgroup. \\
+Asymptomatic agents do not die in this model.
+\end{onlyenv}
+
+\begin{onlyenv}<7>
+\begin{lstlisting}[basicstyle=\tiny\ttfamily, tabsize=6]
+BASE_I = stats.beta(1, 3)
+
+
+def catch_virus(ag, t_exposure):
+	...
+	ag.base_infectiousness = BASE_I.rvs() 	# factor in probability to infect others
+\end{lstlisting}
+\fbox{\textbf{6}:} Each agent has a heterogeneous \textit{ag.base\_infectiousness} ($\in [0,1]$), which factors in the probability of infecting another agents when they are in contact and, thus, exposing them. \\
+\begin{center}
+	\includegraphics[width=0.7\textwidth]{images/BetaDist_} \newline
+	{\scriptsize Drawn from a beta distribution: few agents are highly, but most hardly infectious.}
+\end{center}
+The actual probability depends also on the time or type of infection (typically a- or pre-symptomatic < symptomatic infectiousness(?)) \ra defined later.
+%\end{onlyenv}
+\end{onlyenv}
+
+\begin{onlyenv}<8>
+Summary
+\begin{lstlisting}[basicstyle=\tiny\ttfamily, tabsize=6]
+def catch_virus(ag, t_exposure):
+    ag.state = "exposed"  
+    ag.t_e = t_exposure
+
+    p_s = P_SYMPTOMATIC[ag.group]
+    ag.symptomatic = np.random.choice([True, False], p=[p_s, 1 - p_s])
+
+    incubation_period = INCUBATION_PERIOD.rvs()
+    
+    ag.infectious_period = [
+        ag.t_e + incubation_period - TIME_I_PRESYMPT,
+        ag.t_e + incubation_period + TIME_I_POSTSYMPT
+    ]
+    
+    if ag.symptomatic:
+        ag.t_onset_symptoms = ag.t_e + incubation_period
+        p_d = CFR[ag.group]
+        ag.fatal_case = np.random.choice([True, False], p=[p_d, 1 - p_d])
+    else:
+        ag.t_onset_symptoms = np.nan
+        ag.fatal_case = False
+        
+    ag.base_infectiousness = BASE_I.rvs()   # * FACTOR_INFECTIOUSNESS
+	
+	return 
+\end{lstlisting}
+\end{onlyenv}
+\end{overlayarea}
+\end{frame}
+
+
+%\begin{frame}[fragile]
+%\frametitle{The agent -- Determine course of infection}
+%\begin{overlayarea}{\linewidth}{12cm}
+%\begin{onlyenv}<1>
+%\begin{lstlisting}[basicstyle=\tiny\ttfamily, tabsize=6] 
+%	
+%	
+%	
+%class Agent(_id):
+%	# ... 
+%	def __init__(self, _id):
+%		# ...
+%		
+%	def catch_virus(self, t_exposure):	
+%		self.state = "exposed"  # Exposed
+%		self.t_e = t_exposure
+%\end{lstlisting}
+%\fbox{\textbf{1}:} An agent triggers the internal function "catch\_virus" at time t=t\_exposure, i.e.\ after being infected with the virus.
+%First the state of the agent changes to "exposed" and the time of infection is saved in the internal variable "t\_e"
+%\end{onlyenv}
+%\begin{onlyenv}<2>
+%\begin{lstlisting}[basicstyle=\tiny\ttfamily, tabsize=6]
+%P_SYMPTOMATIC = [0.1, 0.5, 0.8] 
+%
+%
+%class Agent(_id):
+%	# ... 
+%	def catch_virus(self, t_exposure):	
+%		self.state = "exposed"  	# Exposed
+%		self.t_e = t_exposure
+%		
+%		# Probability of infection being symptomatic (dependent on agegroup)
+%		p_s = P_SYMPTOMATIC[self.group]
+%		self.symptomatic = np.random.choice(  
+%							[True, False],
+%							p=[p_s, 1 - p_s]
+%						)
+%\end{lstlisting}
+%\fbox{\textbf{2}:} We determine randomly whether the course of the infection is going to be symptomatic (self.symptomatic = True) or asymptomatic (self.symptomatic = False) (\HandRight\ \  Discrete Distribution for two options). \\
+%The probability depends on the agent's age-/riskgroup.
+%\end{onlyenv}
+%\begin{onlyenv}<3>
+%\begin{lstlisting}[basicstyle=\tiny\ttfamily, tabsize=6]
+%INCUBATION_PERIOD_DIST = stats.gamma(5.807, 0.948)
+%	
+%	
+%class Agent(_id):
+%	# ... 
+%	def catch_virus(self, t_exposure):
+%		# ...
+%		incubation_period = INCUBATION_TIME_DIST.rvs()
+%\end{lstlisting}
+%\fbox{\textbf{3}:} We draw one incubation period from the continuous gamma distribution (that was fitted to data by \citet{lauer_incubation_2020}). 
+%\fbox{\textbf{4}:} We draw one incubation period from the continuous gamma distribution (that was fitted to data by \citet{lauer_incubation_2020}). 
+
+%\begin{center}
+%	\includegraphics[width=0.7\textwidth]{images/GammaDist_}
+%\end{center}
+%\vfill
+%{\tiny Note: For asymptomatic cases the incubation has no meaning. It's just used as a characteristic value to for the infectiousness period (next slide).}
+%\begin{center}
+%	\includegraphics[width=0.7\textwidth]{images/GammaDist_}
+%\end{center}
+%\vfill
+%{\tiny Note: For asymptomatic cases the incubation has no meaning. It's just used as a characteristic value to for the infectiousness period (next slide).}
+%\end{onlyenv}
+%
+%
+%\begin{onlyenv}<4>
+%\begin{lstlisting}[basicstyle=\tiny\ttfamily, tabsize=6]
+%	
+%	
+%	
+%class Agent(_id):
+%	# ... 
+%	def catch_virus(self, t_exposure):
+%		# ...
+%		if self.symptomatic:
+%			# Symptomatic Case
+%			self.t_onset_symptoms = self.t_e + incubation_period
+%		else:
+%			# Asymptomatic Case
+%			self.t_onset_symptoms = np.nan
+%\end{lstlisting}
+%\fbox{\textbf{3}:} Symptom onset.
+%\end{onlyenv}
+%
+%\begin{onlyenv}<5>
+%\begin{lstlisting}[basicstyle=\tiny\ttfamily, tabsize=6]
+%TIME_I_PRESYMPT = 2
+%TIME_I_POSTSYMPT = 4
+%
+%class Agent(_id):
+%	# ... 
+%	def catch_virus(self, t_exposure):
+%		# ...
+%		self.infectious_period = [
+%			self.t_e + incubation_period - TIME_I_PRESYMPT,
+%			self.t_e + incubation_period + TIME_I_POSTSYMPT
+%		]
+%\end{lstlisting}
+%\fbox{\textbf{4}:} The agent is only infectious a few days before and after the onset of symptoms. \\
+%Here, I assume, that the period in which \textit{asymptotic} people are infectiousness is similarily distributed as for the symptomatic cases. \\
+%\begin{center}
+%	\includegraphics[width=0.7\linewidth]{images/single_agents_sickness}
+%\end{center}
+%
+%\end{onlyenv}
+%
+%
+%\begin{onlyenv}<6>
+%\begin{lstlisting}[basicstyle=\tiny\ttfamily, tabsize=6]
+%CFR = [0.0001, 0.005, 0.05] 	# for each age-/riskgroup
+%
+%
+%class Agent(_id):
+%	# ... 
+%	def catch_virus(self, t_exposure):
+%		# ...
+%		if self.symptomatic:
+%			# Symptomatic Case, might die
+%			p_c = CFR[self.group]
+%			self.fatal_case = np.random.choice([True, False], p=[p_c, 1-p_c])
+%		else:
+%			# Asymptomatic Case, can not die
+%			self.fatal_case = False
+%\end{lstlisting}
+%\fbox{\textbf{5}:} If the agent is symptomatic, there's a chance she might die (self.fatal\_case = True).\\
+%The probability depends strongly on the age-/riskgroup. \\
+%Asymptomatic agents do not die in this model.
+%\end{onlyenv}
+%
+%
+%\begin{onlyenv}<7-8>
+%\begin{lstlisting}[basicstyle=\tiny\ttfamily, tabsize=6]
+%BASE_I = stats.beta(1, 3)
+%
+%
+%class Agent(_id):
+%	# ... 
+%	def catch_virus(self, t_exposure):
+%		# ...
+%		self.base_infectiousness = min(1, BASE_I.rvs()
+%\end{lstlisting}
+%\fbox{\textbf{6}:} Each Agent has a specific, heterogeneous infectiousness ($\in [0,1]$), which determines how likely she will infect other agents when they are in contact. \\
+%\end{onlyenv}
+%\begin{onlyenv}<7>
+%This base\_infectiousness is drawn from a beta distribution, such that a few agents are highly infectious, and most are barely infectious. \\
+%
+%The actual infectiousness depends on the time as well (typically pre-symptomatic < symptomatic infectiousness(?)) \ra defined later.
+%\end{onlyenv}
+%\begin{onlyenv}<8>
+%\begin{center}
+%	\includegraphics[width=0.7\textwidth]{images/BetaDist_}
+%\end{center}
+%\end{onlyenv}
+%
+%\begin{onlyenv}<9>
+%Summary:
+%\begin{lstlisting}[basicstyle=\tiny\ttfamily, tabsize=6]
+%class Agent:
+%	# ...
+%	def catch_virus(self, t_exposure):
+%		self.state = "exposed"  #
+%		self.t_e = t_exposure
+%		
+%		p_s = P_SYMPTOMATIC[self.group]
+%		self.symptomatic = np.random.choice([True, False], p=[p_s, 1 - p_s])
+%			
+%		incubation_period = INCUBATION_PERIOD.rvs()
+%		self.infectious_period = [
+%			self.t_e + incubation_period - TIME_I_PRESYMPT,
+%			self.t_e + incubation_period + TIME_I_POSTSYMPT
+%		]
+%		
+%		if self.symptomatic:
+%			self.t_onset_symptoms = self.t_e + incubation_period
+%			
+%			p_c = CFR[self.group]
+%			self.fatal_case = np.random.choice([True, False], p=[p_c, 1-p_c])
+%		else:
+%			self.t_onset_symptoms = np.nan
+%			self.fatal_case = False
+%		
+%		self.base_infectiousness = min(1, BASE_I.rvs())  
+%		return
+%\end{lstlisting}
+%\end{onlyenv}
+%\end{overlayarea}
+%\end{frame}
+
+
+
+
+\begin{frame}
+\frametitle{A few examples of infection courses}
+
+\begin{enumerate}
+	\item Create an agent
+	\item Let it catch the virus (i.e.\ call \textit{catch\_virus})
+	\item Plot the course of the infection. 
+	\item Repeat action 1-3
+\end{enumerate}
+
+\pause
+\begin{center}
+	\includegraphics[width=0.9\linewidth]{images/agents_sickness}
+\end{center}
+\end{frame}
+
+
+%\begin{frame}[fragile]
+%	\frametitle{Initialise Agents}
+%	\begin{overlayarea}{\linewidth}{12cm}
+%		\begin{onlyenv}<1>
+%			\begin{lstlisting}[basicstyle=\tiny\ttfamily, tabsize=6] 
+%				N_AGENTS = 1000  # Number of agents in total
+%				
+%				
+%				def initialise():
+%				global agents
+%				agents = []
+%				
+%				for _id in range(N_AGENTS):
+%				ag = Agent(_id)
+%				agents.append(ag)
+%			\end{lstlisting}
+%		Create Population of all agents
+%		\end{onlyenv}
+%		
+%		\begin{onlyenv}<2>
+%			\begin{lstlisting}[basicstyle=\tiny\ttfamily, tabsize=6] 
+%				N_AGENTS = 1000  # Number of agents in total
+%				N_INFECTED_INIT = 2  # Number of agents in state "exposed" at t=0.
+%				
+%				def initialise():
+%				global agents
+%				agents = []
+%				
+%				for _id in range(N_AGENTS):
+%				ag = Agent(_id)
+%				agents.append(ag)
+%				
+%				# Let N_INFECTED_INIT randomly chosen agents catch the virus at t=0
+%				symptomatic_agents = np.random.choice(agents, size=N_INFECTED_INIT)
+%				for ag in symptomatic_agents:
+%				ag.catch_virus(0)
+%				return
+%			\end{lstlisting}
+%		Initialise a few agents as exposed with the virus.
+%		\end{onlyenv}
+%	\end{overlayarea}
+%\end{frame}

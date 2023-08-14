@@ -1,0 +1,190 @@
+\begin{frame}{Coronavirus and Covid-19}
+	% covid big topic.
+	\bi 
+	\item Appearance of a new virus `Severe Acute Respiratory Syndrome Coronavirus-2 (SARS-CoV-2)' in December 2019 in Wuhan, China.
+	\item The virus causes the disease Covid-19
+	\item Virus spreads mainly airborne from infectious humans to other humans (aerosols, ...)
+	\item Declared pandemic by WHO on 31st January, 2020.
+	\item How dangerous is the Covid-19? 
+	\bi 
+	\item In March strongly increased death rates % (and case fatality rate)
+	\item In beginning, large reproductive number, $R_{\rm 0}$
+	\item \ra We still don't know that much about Covid-19 and Coronavirus-2
+	\ei
+	\ei
+	Sources e.g.\ \url{https://www.ecdc.europa.eu/en/covid-19/facts/questions-answers-basic-facts}
+	% What is it, How does it spread, ...
+	
+\end{frame}
+
+\begin{frame}{Covid-19: Course of an infection}
+\only<1>{
+	Latent, Pre-Symptomatic, Symptomatic, or Asymptomatic?
+	\begin{itemize}
+		\item  Not all infected people develop symptoms (i.e.\ asymptomatic infection), but they might still transmit the virus. This is age dependent (e.g.\ children barely show symptoms).
+		\item After a latent phase, the virus can be transmitted in \textbf{every} phase of the infection. 
+		{\color{red}In particular, the infection period starts \textbf{before} the onset of symptoms (pre-symptomatic).}
+		%{\color{red}{Not all infected people develop symptoms (i.e.\ asymptomatic infection), but they might still transmit the virus. The course of an infection depends on the age (e.g.\ children barely show symptoms). \newline In \textbf{all} stages except for the latent infection the virus can be transmitted: In particular, the infection period starts \textbf{before} the onset of symptoms (pre-symptomatic).}}
+		\item Incubation time: \newline 
+		{Delay between exposure ("catching the virus") and symptom onset. Ranging between 1 and 14 days (Mean ca.\ 5 days.)}
+		%\item Latent Period, Infectious Period: \newline
+		%{\color{red}{After exposure, the infected is often latent. However, the infection period typically starts \textit{before} the symptom onset at which it peaks.}}
+	\end{itemize}
+}
+	\begin{center}
+		
+		\only<2>{\includegraphics[width=\textwidth]{images/courseInfection_Corona1}} 
+
+		\only<3>{\includegraphics[width=\textwidth]{images/courseInfection_Corona2}} 
+		
+		\only<4>{\includegraphics[width=\textwidth]{images/courseInfection_Corona3}} 
+	
+		\only<5>{\includegraphics[width=\textwidth]{images/courseInfection_Corona4}} 				
+				
+		%{\tiny \color{gray}  Meyerowitz, EA, et al.\ (2020) \href{https://doi.org/10.1096/fj.202000919}{Rethinking the role of hydroxychloroquine in the treatment of COVID‐19}. The FASEB Journal.}
+	\end{center}
+
+\end{frame}
+
+\begin{frame}{Covid-19: Stats}
+	\begin{itemize}
+		\item Recovery or Death \newline
+		{\color{red}{The Case Fatality Rate $cfr = \frac{\#\ \text{deaths}}{\# \ \text{confirmed cases}}$ depends strongly on age. 
+		\newline 
+		Note, this is not "how deadly the virus is" (\ra Infection Fatality Ratio $ifr =\frac{\#\ \text{deaths}}{\# \ \text{infected cases}}$) but is often used as a proxy.}}
+		\item $R_{0}$-Value \newline
+		{\color{red}{How many people catch the virus from one infected person (on average) in a \textbf{fully susceptible society}. Observed $R_0$-values ranged between $1.5 - 2.5$. However, it is assumed that infectiousness varies strongly among different people$^{\rm 1}$.}}
+		\item Serial Interval \newline
+		{\color{red}{The time between symptom onsets of consecutive infections (person A infected person B): $t_{\rm Symptom, \ B} - t_{\rm Symptom, \ A} \approx 5.8 \ {\rm days}$ \citep{he_temporal_2020}}}
+	\end{itemize}
+{\tiny (1): Adam, D.\ (2020) \href{https://doi.org/10.1038/d41586-020-02009-w}{“A Guide to R — the Pandemic’s Misunderstood Metric.”} in \textit{Nature}. 
+}
+\end{frame}
+\begin{frame}{Question}
+	\begin{framed}
+	{\color{red}Why is Covid-19 so difficult to manage and dangerous? \textbf{Your answers}}
+	\end{framed}
+	
+\centering
+\includegraphics[width=\linewidth]{Screenshots_Zoom/01_final}
+
+\end{frame}
+
+\begin{frame}{Specifics of Covid-19}
+	Why is Covid-19 so difficult to manage and dangerous? 
+	\bi 
+	\item long delay between start of infectiousness period and symptom onset
+	\item Asymptomatic infection (?)
+	\item High death rate for a part of the society
+	\item Uncertainty!!
+	\ei 
+	\vfill
+	{\scriptsize E.g.\ \citet{he_temporal_2020}}
+\end{frame}
+
+\begin{frame}{Policy approaches}
+	\bi 
+	\item Total Lock-down (e.g.\ Italy. But never perfect. E.g.\ supermarket, police, households)
+	\item Strict quarantine for positive cases and first contacts (Germany, spring 2020)
+	\item Social distancing 
+	\bi
+	\item social part: encouraged to reduce contacts (i.e.\ reduce Nr of potential new infected people)
+		\bi 
+		\item Close schools (reduce number of asymptomatic transmissions)
+		\item ...
+		\ei 
+	\item distancing part: avoid close contacts (i.e.\ reduce chance of transmitting virus)
+	\ei 
+	\item Herd Immunity
+	\item Wear a mask (i.e.\ reduce chance of transmitting virus to random people)
+	\ei
+	\color{red}{Policies vary in their epidemiological, social and economic implications} %\ra We need to understand these effects}
+\end{frame}
+
+\begin{frame}{Role of Modeling - SIR}
+	\bi 
+	\item Initial projections: Based on $R_0$ estimates/measurements. Became known via `flatten the curve'.
+	\item More complex, realistic models emerged (e.g.\ age-structured, which is important for projecting the pressure on the health system)
+	\item Hindsight analysis: Which policy strategy was efficient? E.g.\ \citet{reiner_modeling_2020}
+	\item Assessing impacts of various political decisions:
+			The recent suggestion of `circuit-breaker' again is fueled by mathematical modelling \citep{keeling_precautionary_2020}
+	\ei
+\end{frame}
+
+\begin{frame}{Role of Modeling -  An ABM shapes national politics}
+	\begin{columns}
+		\begin{column}{0.5\textwidth}
+			\centering
+		\includegraphics[width=0.9\linewidth]{images/britishGov_corona} \newline
+		{ \href{https://www.theguardian.com/world/2020/mar/16/new-data-new-policy-why-uks-coronavirus-strategy-has-changed}{The Guardian, 16 Mar 2020}}
+		\end{column}
+	\begin{column}{0.5\textwidth}
+			In the beginning of the pandemic, the British government changed its control strategy mainly due to research from Imperial College and in particular one agent-based model exploring the effectiveness of policies w.r.t.\ Covid-19:
+		\citet{ferguson_report_2020}.
+	\end{column}
+	\end{columns}
+\end{frame}
+
+\begin{frame}{Different types of Models}
+\only<1>{	\bi 
+	\item SIR Models
+	\bi 
+		\item Differential Equations for aggregate variables: Size of the population of susceptible/(exposed)/infected/recovered people
+	\ei 
+	\item Agent Based Model:
+	\bi
+		\item List of discrete entities "agents", with rules specifying their individual `trajectories' or behaviour (e.g.\ what they do when infected)
+	\ei 
+	\ei
+	\vfill
+	\begin{framed}
+	{\color{red}What are advantages/disadvantages of both approaches (in general and related to Covid-19)?}
+	\end{framed}
+	}
+\only<2>{
+	\begin{framed}
+	{\color{red}What are advantages/disadvantages of both approaches (in general and related to Covid-19)? \textbf{Your answers}}
+	\end{framed}
+\centering
+\includegraphics[width=\linewidth]{Screenshots_Zoom/02_final}
+}
+\end{frame}
+%\todo{I want to encourage them to say things and write them simultaneously on a mindmap. And give hints like: "Imagine I'm a mayor of a city/the WHO. What model is more appropriate for my purposes? (And for what?)."}
+
+
+\begin{frame}{Why is ABM useful in this pandemic}
+
+	\begin{itemize}
+		\item The Virus and Humans act non-homogeneously:
+		{
+		\bi
+			\item {\footnotesize \color{gray} The pandemic is not homogeneously distributed in space}
+			 \item {\footnotesize \color{gray} Each person has a different health response to catching the virus }
+				%			\ei
+				%		}
+				%		\item Humans behave non-homogeneous \newline
+			\item {\footnotesize \color{gray} 
+			Will they quarantine? How many social contacts do they have?
+			}
+			\ei 
+		}
+		\item The modeled world is complex and we need to simulate the actual sequence of events.  \newline
+		{
+			\footnotesize \color{gray}
+			If we have two entirely segregated societies, an outbreak of Covid-19 in society A does not impact society B at all. 
+		}
+		\item Single/Microscopic events can play a crucial role! \newline
+		{\footnotesize \color{gray}
+			E.g.\ carnival in Heinsberg (Germany). The pandemic wouldn't exist if "patient 0" in Wuhan had somehow avoided all contacts while infectious
+		}
+		\item Uncertainty and random events play a role: \newline
+		{
+			\footnotesize \color{gray} Can't predict what consequences an action (like a large social event) has.
+		}
+		\item The course of the events/decisions changes the `rules of the game' (non-ergodic system) \newline
+		{
+				\footnotesize \color{gray} Wuhan citizens react differently to a 2nd wave than New Zealanders. 
+			}
+	\end{itemize}
+
+\end{frame}

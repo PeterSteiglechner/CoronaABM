@@ -1,0 +1,67 @@
+\colorlet{sharky_main}{DodgerBlue3!80}
+\colorlet{sharky_secondary}{white}
+\definecolor{sharky_black}{RGB}{43,40,40}
+
+\setbeamercolor{section in head/foot}{fg=sharky_secondary, bg=sharky_main}
+\setbeamercolor{frametitle}{fg=sharky_secondary, bg=sharky_main}
+\setbeamercolor{title page top}{fg=sharky_secondary, bg=sharky_main}
+\setbeamercolor{title page bottom}{fg=sharky_black, bg=sharky_secondary}
+
+
+\setbeamerfont{frametitle}{size=\Large, series=\bfseries}
+\setbeamerfont{title}{size=\huge, series=\bfseries}
+\setbeamerfont{subtitle}{size=\normalsize}
+\setbeamerfont{author}{size=\Large, series=\bfseries}
+\setbeamerfont{date}{size=\small}
+
+\newdimen\sharky@frametitlesep
+\sharky@frametitlesep=1.5ex
+\newdimen\sharky@footbarsep
+\sharky@footbarsep=1ex
+
+% disable navigation
+\setbeamertemplate{navigation symbols}{}
+
+\def\maketitle{%
+  \ifbeamer@inframe
+    \titlepage
+  \else
+    \frame[plain]{\titlepage}
+  \fi
+}
+
+% custom draw the title page above
+\setbeamertemplate{title page}{%
+    \begin{beamercolorbox}[wd=\paperwidth, ht=0.5\paperheight, center, sep=0pt]{title page top}
+        \usebeamerfont{title}\inserttitle\par
+        \vspace{0.5em}%
+        \usebeamerfont{subtitle}\insertsubtitle\par
+        \vspace{1em}%
+    \end{beamercolorbox}%
+    \begin{beamercolorbox}[wd=\paperwidth, ht=0.5\paperheight, center]{title page bottom}
+    \vbox to 0.5\paperheight{%
+        \vfil%
+        \usebeamerfont{author}\insertauthor\par%
+        \vspace{0.5em}%
+        \usebeamerfont{date}\insertdate\par%
+        \vfil%
+    }%
+    \end{beamercolorbox}
+}
+
+\setbeamertemplate{frametitle}{%
+    \nointerlineskip%
+    \usebeamerfont{frametitle}%
+    \begin{beamercolorbox}[wd=\paperwidth,sep=\sharky@frametitlesep]{frametitle}
+        \usebeamerfont{frametitle}\insertframetitle%
+    \end{beamercolorbox}
+}
+
+\setbeamertemplate{footline}{
+    \nointerlineskip%
+    \usebeamerfont{frametitle}%
+    \begin{beamercolorbox}[wd=\paperwidth,sep=\sharky@footbarsep]{section in head/foot}
+        \tiny\insertshorttitle\hfill%
+        \hfill\tiny\insertframenumber/\inserttotalframenumber%
+    \end{beamercolorbox}
+}

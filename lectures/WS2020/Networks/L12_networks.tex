@@ -1,0 +1,1026 @@
+\documentclass[x11names,svgnames,table]{beamer}
+\usetheme{sharky}
+
+\usepackage[compatibility=false, justification=justified]{caption}    % to allow the use of \caption* i.e. caption without numbering
+
+\usepackage{amssymb}
+\usepackage[T1]{fontenc}
+
+%\usepackage[scaled]{beramono} % allows the use of textbf under texttt
+
+\usepackage{bbding} % for symbols such as \HandCuffRight
+
+\usepackage{eqnarray,amsmath}
+\usepackage{mathtools}
+
+\usepackage{forloop}
+\newcounter{ct} 
+%\usepackage[table]{xcolor}  % to color rows of tables using \rowcolor{color} before the table row. 
+                                                  % colors include red, blue, black, gray, yellow and many other popular colors.
+
+\usepackage{ragged2e} % to justify itemized text
+
+\usepackage{media9}   % this to embed youtube video in the pdf as flash file 
+
+\usepackage{animate}  % to created animated png
+
+
+% defining new commands
+\newcommand\bhline{\arrayrulecolor{blue}\hline\arrayrulecolor{black}}
+\newcommand\tg{\textcolor[gray]{0.8}}
+\newcommand\tgr{\textcolor{green}}
+\newcommand\tog{\textcolor{OliveGreen}}
+\newcommand\tpg{\textcolor{PineGreen}}
+\newcommand\tgo{\textcolor{Goldenrod}}
+\newcommand\tro{\textcolor{RedOrange}}
+\newcommand\tyo{\textcolor{YellowOrange}}
+\newcommand\tbo{\textcolor{BurntOrange}}
+\newcommand\ty{\textcolor{yellow}}
+\newcommand\tr{\textcolor{red}}
+\newcommand\tb{\textcolor{blue}}
+
+\newcommand\bi{\begin{itemize}}
+\newcommand\ei{\end{itemize}}
+\newcommand\be{\begin{enumerate}}
+\newcommand\ee{\end{enumerate}}
+\newcommand\bce{\begin{center}}
+\newcommand\ece{\end{center}}
+\newcommand\beq{\begin{equation}}
+\newcommand\eeq{\end{equation}}
+\newcommand\bea{\begin{eqnarray}}
+\newcommand\eea{\end{eqnarray}}
+
+\newcommand\bfig{\begin{figure}}
+\newcommand\efig{\end{figure}}
+
+\usepackage{color}
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+\definecolor{myblue}{rgb}{0.0, 0.18, 0.65}
+
+\usepackage{listings} % for displaying programming code in LaTex (see: https://www.sharelatex.com/learn/Code_listing) 
+
+    \lstset{basicstyle=\tiny\ttfamily,  % size and style of fonts used for the code
+      backgroundcolor=\color{white},  % choose the background color
+      breaklines=true,                          % break lines when too long 
+      resetmargins=true,                      % reset the margins
+      xleftmargin=-0.45cm,                 % set the left margin
+      xrightmargin=0.0cm,                   % set the right margin
+      showspaces=false,                       % show spaces adding particular underscores
+      showstringspaces=false,             % underline spaces within strings
+      showtabs=false,                          % show tabs within strings adding 
+      escapechar=@,                             % to add LaTeX commands within the code
+      keywordstyle=\color{mymauve},  % keyword style
+      commentstyle=\color{red},           % comment style
+      %stringstyle=\color{mygreen}       % string literal style
+} 
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=blue,      
+    urlcolor=blue,
+}
+\urlstyle{same}
+
+\usepackage{changepage}
+\usepackage{bold-extra}
+
+
+\title[{\color{white}Lecture 11~~--~~Network Models}]{Introduction to Network Models}
+\subtitle{Lecture 11}
+\author{Agostino Merico}
+\date{4 Decemebr 2017}
+
+
+\begin{document}
+\frame{\maketitle}
+
+
+% \begin{frame}
+% \frametitle{Content}
+% \large
+% \begin{enumerate}
+% \item {\color{blue}Equilibria \& stability analysis in one-variable models}\\[18pt]
+
+% \item {\color{blue}Equilibria \& stability analysis in multi-variable
+%     models}\\[18pt]
+
+% \item {\color{blue}Sensitivity analysis}\\[18pt]
+
+% \item<2> {\color{red}Graded assignment (final)}
+% \end{enumerate}
+% \end{frame}
+
+
+
+\begin{frame}
+\frametitle{Network science -- Basics}
+\begin{minipage}{11cm}
+\visible<1->{We are now moving into one of the most recent
+  developments of complex systems science: \textit{\tr{networks}}.}\\
+
+\visible<2->{Stimulated by two seminal papers on small-world and
+  scale-free networks\\ 
+\vspace{-0.25cm}
+
+\begin{scriptsize}
+\begin{itemize}
+\item[-] D. J. Watts \& S. H. Strogatz, Collective dynamics of 'small-world'
+networks, \textit{Nature}, 393:440--442, 1998.\\
+
+\item[-] A.-L. Barab\'{a}si \& R. Albert, Emergence of scaling in random
+networks, \textit{Science}, 286:509--512, 1999.\\
+\end{itemize}
+\end{scriptsize}}
+\vspace{0.15cm}
+
+\visible<3>{\textit{network science} has been
+  rapidly growing and producing novel perspectives, research
+  questions, and analytical tools to study various kinds of systems in
+  a number of disciplines, including biology, ecology, sociology,
+  economics, political science, management science, engineering,
+  medicine, and more\,!
+}
+\end{minipage}
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Network science -- Historical roots}
+\small
+\begin{minipage}{11cm}
+\visible<1->{ Historical roots can be found in several disciplines:}\\
+
+\visible<2->{ Mathematics: \textit{graph theory}, the study various properties of
+abstract structures called \textit{graphs} made of \textit{nodes}
+(a.k.a. vertices) and \textit{edges} (a.k.a. links, ties);}\\
+
+\visible<3->{Physics: \textit{statistical physics}, the study of collective systems
+made of a large number of entities (such as phase transitions);}\\
+
+\visible<4->{Social sciences: \textit{Social network analysis};}\\
+
+\visible<5->{Computer science: \textit{Artificial neural networks}.}\\
+
+\visible<6>{Investigations based on network science focus on the
+connections and interactions among the components of a system, not
+just on each individual component.}
+\end{minipage}
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Network science -- Terminology}
+\small
+
+\begin{minipage}{11cm}
+\tb{Network}\\
+A \textit{network} (or \textit{graph}) consists of a set of
+\textit{nodes} (or \textit{vertices}, \textit{actors}) and a set of
+\textit{edges} (or \textit{links}, \textit{ties}) that connect those
+nodes.\\
+
+\tb{Neighbour}\\
+Node $j$ is called a \textit{neighbour} of node $i$ if (and only if)
+node $i$ is connected to node $j$.\\
+
+\tb{Adjacency matrix}\\
+A matrix with rows and columns lab
+eled by nodes, whose $i$-th row,
+$j$-th column component $a_{ij}$ is $1$ if node $i$ is a neighbour of
+node $j$, or $0$ otherwise.\\
+
+\tb{Adjacency  list}\\
+A list of lists of nodes whose $i$-th component is the list of its
+neighbours.
+
+\end{minipage}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Network science -- Example}
+\begin{figure}
+     \begin{center}
+   \includegraphics[width=0.9\textwidth]{images/adj.pdf}\\
+\vspace{0.2cm}
+\caption*{\footnotesize Examples of an adjacent matrix and an adjacent
+  list. The adjacency list offers a more compact, memory-efficient
+  representation, especially if the network is sparse (i.e. if the
+  network density is low--which is often the case for most rea-world
+  networks). But the adjacency matrix also has some
+  benefits, such as its feasibility for mathematical analysis and
+  easy to access its specific components.}
+   \end{center}
+\end{figure}
+
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Network science -- More terminology}
+\footnotesize
+\begin{minipage}{11cm}
+\tb{Degree}\\
+The number of links connected to a node; the degree of node $i$ is written as \texttt{deg($i$)}.\\
+
+\tb{Walk}\\
+A list of links that are sequentially connected to form a continuous route on a
+network. In particular: \textit{trail} is a walk that doesn't go thorugh any link more than
+  once; \textit{path} is a walk that doesn't go through any node (and
+  any link) more than once; \textit{cycle} is a walk that starts and ends at the same node without going
+  through any node more than once on its way.\\
+
+\tb{Subgraph}\\
+Part of the graph\\
+
+\tb{Connected graph}\\
+A graph in which a path exists between any pair of nodes.\\
+
+\tb{Connected component}\\
+A subgraph of a graph that is connected within itself but not
+connected to the rest of the graph.
+\end{minipage}
+\end{frame}
+
+\begin{frame}
+\frametitle{Network science -- Exercise}
+\footnotesize
+\vspace{-0.25cm}
+\begin{figure}
+     \begin{center}
+   \includegraphics[width=0.6\textwidth]{images/net1.pdf}
+   \end{center}
+\end{figure}
+\vspace{-0.15cm}
+
+\begin{minipage}{11cm}
+1. Represent the network in (a) and adjacency matrix and (b) an adjacency list;\\
+\vspace{-0.2cm}
+
+2. Determine the degree for each node;\\
+\vspace{-0.2cm}
+
+3. Classify the following walks as trail, path, cycle, or other.\\[-12pt]
+\begin{itemize}
+\item 6 $\rightarrow$ 3 $\rightarrow$ 2 $\rightarrow$ 4 $\rightarrow$ 2 $\rightarrow$ 1\\[-5pt]
+\item 1 $\rightarrow$ 4 $\rightarrow$ 6 $\rightarrow$ 3 $\rightarrow$ 2\\[-5pt]
+\item 5 $\rightarrow$ 1 $\rightarrow$ 2 $\rightarrow$ 3 $\rightarrow$ 5\\
+\end{itemize}
+\vspace{0.05cm}
+
+4. Identify all fully connected three-node subgraphs (i.e. triangles).
+\end{minipage}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Network science -- Exercise}
+\footnotesize
+\begin{minipage}{11cm}
+
+\end{minipage}
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Network science -- More terminology}
+\footnotesize
+\begin{minipage}{11cm}
+\tb{Complete graph}\\
+A graph in which any pair of nodes are connected;\\
+
+\tb{Regular graph}\\
+A graph in which all nodes have the same degree; every
+complete graph is regular;\\
+
+\tb{Bipartite ($n$-partite) graph}\\
+A graph whose nodes can be divided into two (or $n$) groups so that no
+edge connects nodes within each group:\\
+
+\tb{Tree graph}\\
+A graph in which there is no cycle; a graph made of multiple trees is
+called a forest graph; every tree or forest graph is bipartite;\\
+
+\tb{Planar graph}\\
+A graph that can be graphically drawn in a two-dimensional plane with
+no edge crossings; every tree or forest graph is planar.
+\end{minipage}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Network science -- More terminology}
+\begin{columns}
+\column{0.2cm}
+\column{6cm}
+\vspace{-0.5cm}
+\begin{figure}
+     \begin{center}
+   \includegraphics[width=1.1\textwidth]{images/nets.pdf}
+   \end{center}
+\end{figure}
+\column{1cm}
+\column{3.5cm}
+\scriptsize 
+A: Complete graphs \\[16pt]
+
+B: Regular graphs \\[16pt]
+
+C: Bipartite graphs\\[4pt]
+~~~~(colours show groups)\\[16pt]
+
+D: Tree graphs\\[16pt]
+
+E: Planar graphs
+
+\end{columns}
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Network science -- More terminology}
+\footnotesize
+\begin{minipage}{11cm}
+Classifications of networks according to the types of their links (1
+of 3).\\
+
+\tb{Undirected link}\\
+ A symmetric connection between nodes; if node $i$ is
+connected to node $j$ by an undirected link, then node $j$ also recognises
+node $i$ as its neighbor; a graph made of undirected linke is called an
+undirected graph; the adjacency matrix of an undirected graph is
+always symmetric. \\
+
+\tb{Directed link}\\ 
+An asymmetric connection from one node to another; even
+if node $i$ is connected to node $j$ by a directed link, the connection
+isn't necessarily reciprocated from node $j$ to node $i$; a graph made of
+directed links is called a directed graph; the adjacency matrix of a
+directed graph is generally asymmetric.\\
+
+\tb{Unweighted link}\\
+A link without any weight value associated to
+it; there are only two possibilities between a pair of nodes in a
+network with unweighted links; whether there is a link between them
+or not; the adjacency matrix of such a network is made of only 0s and
+1s.
+\end{minipage}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Network science -- More terminology}
+\footnotesize
+\begin{minipage}{11cm}
+Classifications of networks according to the types of their links  (2
+of 3).\\
+
+\tb{Weighted link}\\ 
+A link with a weight value associated to it; a weight
+is usually given by a non-negative real number, which may represent
+a connection strength or distance between nodes, depending on the
+nature of the system being modeled; the definition of the adjacency
+matrix can be extended to contain those link weight values for
+networks with weighted links; the sum of the weights of links
+connected to a node is often called the node strength, which
+corresponds to a node degree for unweighted graphs.\\
+
+\tb{Multiple links}\\ 
+Links that share the same origin and destination; such
+multiple links connect two nodes more than once.\\
+
+\tb{Self-loop}\\ 
+A link that originates and ends at the same node.
+\end{minipage}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Network science -- More terminology}
+\footnotesize
+\begin{minipage}{11cm}
+Classifications of networks according to the types of their links  (3
+of 3).\\
+
+\tb{Simple graph}\\
+A graph that does not contain directed, weighted, or
+multiple links, or self-loops; traditional graph theory mostly focuses
+on simple graphs.\\
+
+\tb{Multigraph}\\
+A graph that may contain multiple links; many
+mathematicians also allow multigraphs to contain
+self-loops; multigraphs can be undirected or directed.\\
+\vspace{0.75cm}
+
+\visible<2>{\textbf{NOTE}: According to these taxonomies, all the examples shown in the
+previous figure are simple graphs; but many real-world networks are
+ modeled using directed, weighted, and/or multiple links.}
+
+\end{minipage}
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Constructing network models with \texttt{NetworkX}}
+\small
+\begin{minipage}{11cm}
+Now that we have completed a crash course on graph 
+terminology, it is time to begin with computational modelling of
+networks.\\
+
+There is a wonderful python module called \texttt{NetworkX} for network modelling
+and analysis; it is a free and widely used toolkit.\\
+
+If you use Anaconda, \texttt{NetworkX} is already
+installed; if you use Enthought Canopy, you can easily
+install \texttt{NetworkX} by using the package manager.\\
+
+The documentation for \texttt{NetworkX} is available online at\\
+\url{http://networkx.github.io}.
+\end{minipage}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Constructing network models with \texttt{NetworkX}}
+\footnotesize
+\begin{minipage}{11cm}
+Data structure used in \texttt{NetworkX}.\\
+
+\textbf{Graph} For undirected simple graphs (self-loops are allowed);\\
+
+\textbf{DiGraph} For directed simple graphs (self-loops are allowed);\\
+
+\textbf{MultiGraph} For undirected multigraphs (self-loops and
+multiple links are allowed);\\ 
+
+\textbf{MultiDiGraph} For directed multigraphs (self-loops and
+multiple links are allowed).\\
+\vspace{0.5cm}
+
+You can choose one of these four data types that suits your modeling
+purposes. We will use mostly Graph and DiGraph.\\
+
+You can construct a graph of your own manually.
+
+\end{minipage}
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Constructing network models with \texttt{NetworkX}}
+\scriptsize
+\vspace{-0.4cm}
+
+\begin{block}{}
+\hspace{-0.3cm}\texttt{{\color{blue}import} networkx {\color{blue}as} nx}\\
+\vspace{0.15cm}
+
+\visible<2->{
+\hspace{-0.3cm}\texttt{{\color{red}\# creates a new empty Graph object}}\\
+\hspace{-0.45cm}\texttt{ g = nx.Graph(\,)}\\
+\vspace{0.15cm}}
+
+\visible<3->{
+\hspace{-0.3cm}\texttt{{\color{red}\# add a node named 'John'}}\\
+\hspace{-0.45cm}\texttt{ g.add\_node('John')}\\
+\vspace{0.15cm}}
+
+\visible<4->{
+\hspace{-0.3cm}\texttt{{\color{red}\# add a bunch of nodes at once}}\\
+\hspace{-0.45cm}\texttt{ g.add\_nodes\_from(['Josh', 'Jane', 'Jesse', 'Jack'])}\\
+\vspace{0.15cm}}
+
+\visible<5->{
+\hspace{-0.3cm}\texttt{{\color{red}\# add a link between 'John' and 'Jane'}}\\
+\hspace{-0.45cm}\texttt{ g.add\_edge('John', 'Jane')}
+\vspace{0.15cm}}
+
+\visible<6->{
+\hspace{-0.3cm}\texttt{{\color{red}\# add a bunch of links at once}}\\
+\hspace{-0.45cm}\texttt{ g.add\_edges\_from([('Jesse', 'Josh'), ('John', 'Jack'), ('Jack', 'Jane')])}\\
+\vspace{0.15cm}}
+
+\visible<7->{
+\hspace{-0.3cm}\texttt{{\color{red}\# add more links}}\\
+\hspace{-0.3cm}\texttt{{\color{red}\# undefined nodes will be created automatically}}\\
+\hspace{-0.45cm}\texttt{ g.add\_edges\_from([('Jesse', 'Jill'), ('Jill', 'Jeff'), ('Jeff', 'Jane')])}\\
+\vspace{0.15cm}}
+
+\visible<8->{
+\hspace{-0.3cm}\texttt{{\color{red}\# remove the link between 'John' and 'Jane'}}\\
+\hspace{-0.45cm}\texttt{ g.remove\_edge('John', 'Jane')}\\
+\vspace{0.15cm}}
+
+\visible<9>{
+\hspace{-0.3cm}\texttt{{\color{red}\# remove the node 'John'}}\\
+\hspace{-0.3cm}\texttt{{\color{red}\# all links connected to that node will be removed too}}\\
+\hspace{-0.45cm}\texttt{ g.remove\_node('John')}}
+
+\end{block}
+
+\end{frame}
+
+
+
+\begin{frame}[fragile]
+	\forloop{ct}{1}{\value{ct} < 7}
+	{
+		\only<\value{ct}>{
+			\lstinputlisting[language=python, firstline=1, lastline=\value{ct}]{test.py}
+		}
+	}
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Constructing network models with \texttt{NetworkX}}
+\vspace{-0.4cm}
+\begin{scriptsize}
+
+\begin{minipage}{11cm}
+In those examples, I used strings for the names of the nodes, but a
+node's name can be a number, a string, a list, a tuple, a dictionary,
+etc. \\
+\vspace{-0.2cm}
+
+If you execute those command lines, you can see the following
+results:\\
+\end{minipage}
+\vspace{-0.5cm}
+
+\begin{block}{}
+\begin{tiny}
+\visible<2->{
+\hspace{0.5cm}\texttt{$>>>$ g}\\
+\hspace{0.5cm}\texttt{<networkx.classes.graph.Graph object at 0x1819cdfe10>}}\\
+\vspace{0.25cm}
+
+\visible<3->{
+\hspace{0.5cm}\texttt{$>>>$ print(g.nodes)}\\
+\hspace{0.5cm}\texttt{['John', 'Josh', 'Jane', 'Jesse', 'Jack',
+  'Jill', 'Jeff']}}\\
+\vspace{0.25cm}
+
+\visible<4->{
+\hspace{0.5cm}\texttt{$>>>$ print(g.edges)}\\
+\hspace{0.5cm}\texttt{[('Jane', 'Jeff'), ('Jesse', 'Jill'), ('Jill', 'Jeff')]}}\\
+\vspace{0.25cm}
+
+\visible<5>{
+\hspace{0.5cm}\texttt{$>>>$ print(g.adj)}\\
+\hspace{0.5cm}\texttt{\{'John': \{\,\}, 'Josh': \{\,\}, 'Jane': \{'Jeff':
+  \{\,\}\}, 'Jess': \{'Jill': \{\,\}\}, 'Jack': \{\,\},\\ 
+\hspace{0.5cm} 'Jill': \{'Jess': \{\,\}, 'Jeff': \{\,\}\}, 'Jeff': \{'Jill': \{\,\}, 'Jane': \{\,\}\}\}}}\\
+\end{tiny}
+\end{block}
+\vspace{0.4cm}
+
+\begin{minipage}{11cm}
+\visible<2->{The first output (\texttt{<networkx.classes. ... >}) shows that
+\texttt{g} is a Graph object;}\\
+\vspace{-0.2cm}
+
+\visible<3->{\texttt{print(g.nodes)} returns a list
+of all nodes in the network;}\\ 
+\vspace{-0.2cm}
+
+\visible<4->{ \texttt{print(g.edges)} returns a list of all
+links};\\ 
+\vspace{-0.2cm}
+
+\visible<5>{\texttt{print(g.adj)} provides a view of the adjacency
+ list data structure (the links of each node) by the dictionary-like object; \textbf{note}: the
+  property of each node are also stored (they are initially empty).}
+\end{minipage}
+
+\end{scriptsize}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Constructing network models with \texttt{NetworkX}}
+\begin{small}
+
+\begin{minipage}{11cm}
+Any node property can be dynamically added or modified as follows: \\
+\end{minipage}
+
+\begin{block}{}
+\begin{footnotesize}
+\hspace{0.5cm}\texttt{$>>>$ g.node['Jeff']['job'] = 'student'}\\
+\hspace{0.5cm}\texttt{$>>>$ g.node['Jeff']['age'] = 20}\\
+\hspace{0.5cm}\texttt{$>>>$ g.node['Jeff']}\\
+\hspace{0.5cm}\texttt{\{'age': 20, 'job': 'student'\}}
+\end{footnotesize}
+\end{block}
+
+\end{small}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Constructing network models with \texttt{NetworkX}}
+
+\begin{minipage}{11cm}
+\begin{small}
+In the examples above, we manually constructed network models by
+adding or removing nodes and links. But \texttt{NetworkX} also has some
+built-in functions that can generate networks of specific shapes.\\
+\end{small}
+\end{minipage}
+\vspace{-0.5cm}
+
+\begin{block}{}
+\begin{scriptsize}
+\hspace{0.5cm}\texttt{{\color{blue}import} networkx {\color{blue}as} nx}\\
+\vspace{0.25cm}
+
+\hspace{0.5cm}\texttt{{\color{red}\# complete graph made of 5 nodes}}\\
+\hspace{0.5cm}\texttt{g1 = nx.complete\_graph(5)}\\
+\vspace{0.25cm}
+
+\hspace{0.5cm}\texttt{{\color{red}\# complete (fully connected) bipartite graph}}\\
+\hspace{0.5cm}\texttt{{\color{red}\# made of group of 3 nodes and group of 4 nodes}}\\
+\hspace{0.5cm}\texttt{g2 = nx.complete\_bipartite\_graph(3, 4)}\\
+\vspace{0.25cm}
+
+\hspace{0.5cm}\texttt{{\color{red}\# Zachary's Karate Club graph}}\\
+\hspace{0.5cm}\texttt{g3 = nx.karate\_club\_graph(\,)}
+
+\end{scriptsize}
+\end{block}
+\vspace{0.5cm}
+
+\begin{minipage}{11cm}
+\begin{small}
+The last example (Zachary's Karate Club graph) is a famous classic
+example of social networks reported by Wayne Zachary in the '70s;
+it is a network of friendships among 34 members of a karate club
+at a U.S. university.\\
+\end{small}
+\end{minipage}
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Constructing network models with \texttt{NetworkX}}
+\begin{minipage}{11cm}
+\begin{small}
+The lists of links of the networks above are as follows:\\
+\end{small}
+\end{minipage}
+
+\begin{block}{}
+\begin{tiny}
+\hspace{0.5cm}\texttt{$>>>$ print(g1.edges)}\\
+\hspace{0.5cm}\texttt{[(0, 1), (0, 2), (0, 3), (0, 4), (1, 2), (1, 3), (1, 4), (2, 3), (2, 4),
+(3, 4)]}\\
+\vspace{0.35cm}
+
+\hspace{0.5cm}\texttt{$>>>$ print(g2.edges)}\\
+\hspace{0.5cm}\texttt{[(0, 3), (0, 4), (0, 5), (0, 6), (1, 3), (1, 4), (1, 5), (1, 6), (2, 3), (2, 4),}\\
+\hspace{0.5cm}\texttt{(2, 5), (2, 6)]}\\
+\vspace{0.35cm}
+
+\hspace{0.5cm}\texttt{$>>>$ print(g3.edges)}\\
+\hspace{0.5cm}\texttt{[(0, 1), (0, 2), (0, 3), (0, 4), (0, 5), (0, 6),
+  (0, 7), (0, 8), (0, 10), (0, 11),}\\
+\hspace{0.5cm}\texttt{(0, 12), (0, 13), (0, 17), (0, 19), (0, 21), (0, 31), (1, 2),
+(1, 3), (1, 7), (1, 13),}\\ 
+\hspace{0.5cm}\texttt{(1, 17), (1, 19), (1, 21), (1, 30), (2, 3),
+(2, 32), (2, 7), (2, 8), (2, 9), (2, 13),}\\ 
+\hspace{0.5cm}\texttt{(2, 27), (2, 28), (3, 7),
+(3, 12), (3, 13), (4, 10), (4, 6),(5, 16), (5, 10), (5, 6),}\\
+\hspace{0.5cm}\texttt{(6, 16),
+(8, 32), (8, 30), (8, 33), (9, 33), (13, 33), (14, 32), (14, 33),
+(15, 32),}\\ 
+\hspace{0.5cm}\texttt{(15, 33), (18, 32), (18, 33), (19, 33), (20, 32), (20, 33),
+(22, 32), (22, 33), (23, 32),}\\ 
+\hspace{0.5cm}\texttt{(23, 25), (23, 27), (23, 29), (23, 33),
+(24, 25), (24, 27), (24, 31), (25, 31), (26, 33),}\\ 
+\hspace{0.5cm}\texttt{(26, 29), (27, 33),
+(28, 33), (28, 31), (29, 32), (29, 33), (30, 33), (30, 32), (31,
+33),}\\
+\hspace{0.5cm}\texttt{(31, 32), (32, 33)]}
+
+\end{tiny}
+\end{block}
+
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Visualising networks with \texttt{NetworkX}}
+\begin{minipage}{11cm}
+\begin{small}
+NetworkX also provides functions for visualizing networks; they are
+not as powerful as other more specialised software, but still quite
+handy and useful, especially for small- to mid-sized network
+visualization; those visualization functions depend on the functions
+defined in matplotlib (pylab), so we need to import it before
+visualizing networks.\\
+
+The simplest way is to use the NetworkX's \texttt{draw} function, as follows:\\
+\end{small}
+\end{minipage}
+
+\begin{block}{}
+\begin{scriptsize}
+\hspace{0.5cm}\texttt{{\color{blue}from} pylab {\color{blue}import} *}\\
+\hspace{0.5cm}\texttt{{\color{blue}import} networkx {\color{blue}as} nx}\\
+\vspace{0.25cm}
+
+\hspace{0.5cm}\texttt{g = nx.karate\_club\_graph(\,)}\\
+\hspace{0.5cm}\texttt{nx.draw(g)}\\
+\hspace{0.5cm}\texttt{show(\,)}
+
+\end{scriptsize}
+\end{block}
+
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Visualising networks with \texttt{NetworkX}}
+\begin{minipage}{11cm}
+\begin{small}
+The layout of the nodes and links is automatically determined by the
+\textit{Fruchterman-Reingold force-directed} algorithm (called "spring
+layout" in NetworkX); this heuristic algorithm tends to bring
+groups of well-connected nodes closer to each other, making the result
+of visualization more meaningful and aesthetically more pleasing.\\
+\end{small}
+\end{minipage}
+
+\begin{figure}
+     \begin{center}
+   \includegraphics[width=0.5\textwidth]{images/karate.png}\\
+\vspace{-0.1cm}
+\caption*{\tiny Visual output of the Zachary's Karate Club
+  network. Your result may not look like this because the spring
+  layout algorithm uses random initial positions.}
+   \end{center}
+\end{figure}
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Visualising networks with \texttt{NetworkX}}
+\begin{minipage}{11cm}
+\begin{small}
+There are several other layout algorithms; also, there are many options you can use to customise
+visualization results; check out the NetworkX's online documentation
+to learn more about what you can do. For example:\\
+\end{small}
+\end{minipage}
+\vspace{-1cm}
+
+\begin{block}{}
+\begin{tiny}
+\hspace{0.5cm}\texttt{{\color{blue}import} pylab {\color{blue}as} pl}\\
+\hspace{0.5cm}\texttt{{\color{blue}import} networkx {\color{blue}as} nx}\\
+\vspace{0.2cm}
+
+\hspace{0.5cm}\texttt{g = nx.karate\_club\_graph(\,)}\\
+\hspace{0.5cm}\texttt{pl.subplot(2,2,1)}\\
+\hspace{0.5cm}\texttt{nx.draw\_random(g, node\_size=60)}\\
+\hspace{0.5cm}\texttt{pl.title('random layout)}\\
+\vspace{0.2cm}
+
+\hspace{0.5cm}\texttt{pl.subplot(2, 2, 2)}\\
+\hspace{0.5cm}\texttt{nx.draw\_circular(g, node\_size=60)}\\
+\hspace{0.5cm}\texttt{pl.title('circular layout')}\\
+\vspace{0.2cm}
+
+\hspace{0.5cm}\texttt{pl.subplot(2, 2, 3)}\\
+\hspace{0.5cm}\texttt{nx.draw\_spectral(g, node\_size=60)}\\
+\hspace{0.5cm}\texttt{pl.title('spectral layout')}\\
+\vspace{0.2cm}
+
+\hspace{0.5cm}\texttt{pl.subplot(2, 2, 4)}\\
+\hspace{0.5cm}\texttt{shells = [[0, 1, 2, 32, 33],}\\
+\hspace{0.75cm}\texttt{[3, 5, 6, 7, 8, 13, 23, 27, 29, 30, 31],}\\
+\hspace{0.75cm}\texttt{[4, 9, 10, 11, 12, 14, 15, 16, 17, 18,}\\
+\hspace{0.75cm}\texttt{19, 20, 21, 22, 24, 25, 26, 28]]}\\
+\hspace{0.5cm}\texttt{nx.draw\_shell(g, , node\_size=60, nlist = shells)}\\
+\hspace{0.5cm}\texttt{pl.title('shell layout')}\\
+\hspace{0.5cm}\texttt{pl.show(\,)}
+
+\end{tiny}
+\end{block}
+\end{frame}
+
+
+
+
+\begin{frame}
+\frametitle{Visualising networks with \texttt{NetworkX}}
+\begin{figure}
+     \begin{center}
+   \includegraphics[width=0.8\textwidth]{images/layout.png}\\
+\vspace{-0.1cm}
+\caption*{\small Visual output showing examples of network layouts available in NetworkX.}
+   \end{center}
+\end{figure}
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Visualising networks with \texttt{NetworkX}}
+\vspace{-0.7cm}
+\begin{block}{}
+\begin{tiny}
+\hspace{0.5cm}\texttt{{\color{blue}import} pylab {\color{blue}as} pl}\\
+\hspace{0.5cm}\texttt{{\color{blue}import} networkx {\color{blue}as} nx}\\
+\vspace{0.2cm}
+
+\hspace{0.5cm}\texttt{g = nx.karate\_club\_graph(\,)}\\
+\vspace{0.2cm}
+
+\hspace{0.5cm}\texttt{positions = nx.spring\_layout(g)}\\
+\vspace{0.2cm}
+
+\hspace{0.5cm}\texttt{pl.subplot(3, 2, 1)}\\
+\hspace{0.5cm}\texttt{nx.draw(g, positions, node\_size=180, with\_labels=True)}\\
+\hspace{0.5cm}\texttt{pl.title('showing node names')}\\
+\vspace{0.2cm}
+
+\hspace{0.5cm}\texttt{pl.subplot(3, 2, 2)}\\
+\hspace{0.5cm}\texttt{nx.draw(g, positions, node\_size=60, node\_shape='>')}\\
+\hspace{0.5cm}\texttt{pl.title('using different node shape')}\\
+\vspace{0.2cm}
+
+\hspace{0.5cm}\texttt{pl.subplot(3, 2, 3)}\\
+\hspace{0.5cm}\texttt{nx.draw(g, positions, node\_size=[g.degree(i)*50 {\color{blue}for} i {\color{blue}in} g.nodes()])}\\
+\hspace{0.5cm}\texttt{pl.title('changing node sizes')}\\
+\vspace{0.2cm}
+
+\hspace{0.5cm}\texttt{pl.subplot(3, 2, 4)}\\
+\hspace{0.5cm}\texttt{nx.draw(g, positions, node\_size=60, edge\_color='pink',}\\ 
+\hspace{1.5cm}\texttt{node\_color=['yellow' {\color{blue}if} i$<$17 {\color{blue}else} 'green' {\color{blue}for} i {\color{blue}in} g.nodes(\,)]) }\\
+\hspace{0.5cm}\texttt{pl.title('coloring nodes and links')}\\
+\vspace{0.2cm}
+
+\hspace{0.5cm}\texttt{pl.subplot(3, 2, 5)}\\
+\hspace{0.5cm}\texttt{nx.draw\_networkx\_nodes(g, positions, node\_size=60)}\\
+\hspace{0.5cm}\texttt{pl.title('nodes only')}\\
+\vspace{0.2cm}
+
+\hspace{0.5cm}\texttt{pl.subplot(3, 2, 6)}\\
+\hspace{0.5cm}\texttt{nx.draw\_networkx\_edges(g, positions)}\\
+\hspace{0.5cm}\texttt{pl.title('links only')}\\
+\vspace{0.2cm}
+
+\hspace{0.5cm}\texttt{pl.show(\,)}\\
+
+\end{tiny}
+\end{block}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Visualising networks with \texttt{NetworkX}}
+\vspace{-0.7cm}
+\begin{figure}
+     \begin{center}
+   \includegraphics[height=0.65\textwidth]{images/layout-options.png}\\
+\vspace{-0.25cm}
+\caption*{\tiny Examples of
+  drawing options available in NetworkX; the same node positions are
+  used in all panels; the last two examples show the axes because
+  they are generated using different drawing functions; to suppress
+  the axes, use \texttt{axis('off')} right after the network drawing.}
+   \end{center}
+\end{figure}
+\end{frame}
+
+
+
+
+\begin{frame}
+\frametitle{Dynamical network models}
+\begin{minipage}{11cm}
+\begin{scriptsize}
+
+There are different categories of dynamical network models. We will
+look at the following three:\\
+
+\tb{Models for "dynamics \textit{on} networks''}.\\ 
+These models consider how the states of components (i.e. the nodes)
+change over time through their interactions with other nodes that are
+connected to them. Network topology is fixed throughout time. Cellular
+automata, boolean networks, and artificial neural networks (without
+learning) all belong to this class.\\
+
+\tb{Models for "dynamics \textit{of} networks"}.\\ 
+These are the models that consider
+changes in network topology, for various
+purposes: to understand mechanisms that bring particular network
+topologies, to evaluate robustness and vulnerability of networks, to
+design procedures for improving certain properties of networks,
+etc. \\
+
+\tb{Models for "adaptive networks"}.\\ 
+These are models that describe the co-evolution
+of dynamics on and of networks, where node states and network
+topologies dynamically change . Adaptive
+network models
+provide a generalised modeling framework for complex systems.
+
+\end{scriptsize}
+\end{minipage}
+\end{frame}
+
+\begin{frame}
+\frametitle{Dynamical network models}
+\begin{minipage}{11cm}
+\begin{footnotesize}
+Because NetworkX adopts dictionaries as main data
+structure, we can easily add states to nodes (and links) and
+dynamically update those states iteratively. This is a simulation of
+dynamics on networks.\\
+
+Many real-world dynamical networks fall into this category,
+including:\\
+\vspace{-0.25cm}
+
+\begin{itemize}
+\item Regulatory relationships among genes and proteins within a cell,
+  where nodes are genes and/or proteins and the node states are their
+  expression levels.\\[6pt]
+\item Ecological interactions among species in an ecosystem, where
+  nodes are species and the node states are their populations.\\[6pt]
+\item Disease infection on social networks, where nodes are
+  individuals and the node states are their epidemiological states
+  (e.g., susceptible, infected, recovered, immunised, etc.).\\[6pt]
+\item Information/culture propagation on organizational/social
+  networks, where nodes are individuals or communities and the node
+  states are their informational/cultural states.
+\end{itemize}
+
+\end{footnotesize}
+\end{minipage}
+\end{frame}
+
+
+%-------------------------------------------------------------
+
+
+
+
+\begin{frame}
+  \frametitle{Further reading}
+
+  \begin{thebibliography}{10}
+    
+    \scriptsize
+
+    \beamertemplatebookbibitems % block for books
+
+  \bibitem[Sayama, 2015]{SAYA15}
+    Hiroki Sayama~2015
+    \newblock {\em Introduction to the Modeling and Analysis of
+      Complex Systems}
+    \newblock Open SUNY Textbooks 
+
+ 
+    \beamertemplatearticlebibitems % block for articles
+ 
+
+    \beamertemplateonlinebibitems % block for online material
+
+   \bibitem[NetworkX 2.0, 2017]{NX2.0}
+   NetworkX Reference 2.0
+    \newblock \url{https://networkx.github.io/documentation/stable/_downloads/networkx_reference.pdf}
+    \newblock Sep 20, 2017
+
+
+
+  \end{thebibliography}
+
+\end{frame}
+
+
+
+
+
+\end{document}

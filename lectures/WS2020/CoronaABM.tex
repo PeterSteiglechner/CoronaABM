@@ -1,0 +1,319 @@
+\documentclass[x11names,svgnames,table]{beamer}
+\usetheme{sharky}
+
+\def\Put(#1,#2)#3{\leavevmode\makebox(0,0){\put(#1,#2){#3}}}
+
+\usepackage{calc}
+
+\usepackage[compatibility=false, justification=justified]{caption}    % to allow the use of \caption* i.e. caption without numbering
+
+\usepackage{amssymb}
+\usepackage[T1]{fontenc}
+
+%\usepackage[scaled]{beramono} % allows the use of textbf under texttt
+
+\usepackage{bbding} % for symbols such as \HandCuffRight
+
+\usepackage{eqnarray,amsmath}
+\usepackage{mathtools}
+
+\usepackage{forloop}
+\newcounter{ct} 
+\newcounter{ll}
+%\usepackage[table]{xcolor}  % to color rows of tables using \rowcolor{color} before the table row. 
+                                                  % colors include red, blue, black, gray, yellow and many other popular colors.
+
+\usepackage{ragged2e} % to justify itemized text
+
+\usepackage{media9}   % this to embed youtube video in the pdf as flash file 
+\usepackage{movie15} % gif
+\usepackage{animate}  % to created animated png
+
+
+% defining new commands
+\newcommand\bhline{\arrayrulecolor{blue}\hline\arrayrulecolor{black}}
+\newcommand\tg{\textcolor[gray]{0.8}}
+\newcommand\tgr{\textcolor{green}}
+\newcommand\tog{\textcolor{OliveGreen}}
+\newcommand\tpg{\textcolor{PineGreen}}
+\newcommand\tgo{\textcolor{Goldenrod}}
+\newcommand\tro{\textcolor{RedOrange}}
+\newcommand\tyo{\textcolor{YellowOrange}}
+\newcommand\tbo{\textcolor{BurntOrange}}
+\newcommand\ty{\textcolor{yellow}}
+\newcommand\tr{\textcolor{red}}
+\newcommand\tb{\textcolor{blue}}
+
+\newcommand\bi{\begin{itemize}}
+\newcommand\ei{\end{itemize}}
+\newcommand\be{\begin{enumerate}}
+\newcommand\ee{\end{enumerate}}
+\newcommand\bce{\begin{center}}
+\newcommand\ece{\end{center}}
+\newcommand\beq{\begin{equation}}
+\newcommand\eeq{\end{equation}}
+\newcommand\bea{\begin{eqnarray}}
+\newcommand\eea{\end{eqnarray}}
+
+\newcommand\bl{\begin{lstlisting}}
+\newcommand\el{\end{lstlisting}}
+	
+\newcommand\bfig{\begin{figure}}
+\newcommand\efig{\end{figure}}
+
+\usepackage{color}
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+\definecolor{myblue}{rgb}{0.0, 0.18, 0.65}
+
+\usepackage{listings} % for displaying programming code in LaTex (see: https://www.sharelatex.com/learn/Code_listing) 
+
+    \lstset{basicstyle=\tiny\ttfamily,  % size and style of fonts used for the code
+      backgroundcolor=\color{white},  % choose the background color
+      breaklines=true,                          % break lines when too long 
+      resetmargins=true,                   % reset the margins
+      xleftmargin=-0.45cm,                 % set the left margin
+      xrightmargin=0.0cm,                   % set the right margin
+      showspaces=false,                       % show spaces adding particular underscores
+      showstringspaces=false,             % underline spaces within strings
+      showtabs=false,                          % show tabs within strings adding 
+      escapechar=@,                             % to add LaTeX commands within the code
+      keywordstyle=\color{mymauve},  % keyword style
+      commentstyle=\color{red},           % comment style
+      %stringstyle=\color{mygreen}       % string literal style
+      tabsize=8,
+      language=python,
+      numberstyle=\tiny
+} 
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=blue,      
+    urlcolor=blue,
+}
+\urlstyle{same}
+
+\usepackage{changepage}
+\usepackage{bold-extra}
+
+\input{/home/peter/Organisatorisches/Latex_dinge/packages_beamer}
+
+% TABULARX
+\usepackage{tabularx}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+
+
+\addbibresource{CoronaABM.bib}
+
+
+\setbeamercolor{block body alerted}{bg=alerted text.fg!10}
+\setbeamercolor{block title alerted}{bg=alerted text.fg!20}
+\setbeamercolor{block body}{bg=structure!10}
+\setbeamercolor{block title}{bg=structure!20}
+\setbeamercolor{block body example}{bg=green!10}
+\setbeamercolor{block title example}{bg=green!20}
+\setbeamertemplate{blocks}[rounded][shadow]
+
+
+\title[{\color{white}Lecture 12~~--~~Agent-Based Model of Covid-19}]{Agent-Based Model of Covid-19} % An Agent-Based Model for SARS-CoV-2 transmission and containment policies
+\subtitle{Lecture 12}
+\author{Peter Steiglechner}
+\date{26 November 2020}
+
+\begin{document}
+\frame{\maketitle}
+
+\begin{frame}<1-3>[label=Outline]{What we will cover today.}
+	\setbeamercovered{transparent}
+	\begin{itemize}%[<+-|alert@+>]
+	\item<1> An Agent-Based Model of the spread of Covid-19 in a small society in order to test local policies
+	\item<2> How to make agents heterogeneous: Drawing from probability distributions
+	\item<3> How to let agents interact with each other: Social Networks for the interaction of agents
+\end{itemize}
+
+\end{frame}
+
+
+\input{covid-intro}
+
+
+\begin{frame}{\textbf{Concept 0 Summary:}}
+\begin{block}{Consider ABM when:}
+	\bi 
+	\item Microscopic behaviour can cause \textbf{emergent} macroscopic phenomena. \newline
+	{\color{gray} Example: Fish swarm or bird flock}
+	\item People, space, or responses (processes) are \textbf{non-homogeneous} with potentially non-linear feedbacks. \ra We can't reduce the population to a representative agent (\textbf{irreducibility})
+	\newline 
+	{\color{gray}\textit{Il mondo bello per que se vario.}}
+	\item \textbf{Uncertainty} plays a dominant role. 
+	\item Context matters (\textbf{non-ergodic system})
+	\ei
+\end{block}
+	{\footnotesize If interested, read the very enlightening book `The end of theory' by \citet{bookstaber_end_2017}}
+\end{frame}
+
+\againframe<1>{Outline}
+
+
+\begin{frame}<1-3>[label=overview]{Overview ABM}
+	Let's develop an ABM (Slide 14/56 from Lecture 10 on ABM)
+	\be
+	\item Specific problem to be solved by the ABM. \newline \only<1>{\small \ \newline \ \newline}
+	\only<2->{\small {\color{red} How do a few infected agents affect a small, interconnected, simple society split into three age-/riskgroups? What are the impacts of certain local policies?}}
+	\item Design of agents and their static / dynamic attributes.\newline \only<1,2>{\small \ \newline }
+	\only<3->{\small {\color{red} Class \textit{Agent()}, function \textit{initialise()}, that creates heterogeneous agents, and helper-function \textit{catch\_virus} that creates an agent's infection course (when the agent catches the virus)}}
+	\item \sout{Design of an environment and the way agents interact with it.}
+	\item Design of agents’ mutual interactions.\newline
+	\only<4->{\small {\color{red} Via social network of agents}}	
+	\item Design of agents’ behaviours. \newline
+	\only<5->{\small {\color{red} Via function \textit{update()} and for single agent \textit{catch\_virus}}}
+	\item Availability of data.	\only<6->{AND}
+	\item Method of model validation. \newline \only<1,2,3,4,5>{\small \ \newline }
+	\only<6->{\small {\color{red} E.g.\ via the obtained reproductive number $R_0$ (not shown here)}}
+	\ee
+\end{frame}
+
+\input{agent-and-attributes}
+
+\begin{frame}[fragile]
+\frametitle{\textbf{Concept 1 and 2 Summary}}
+\begin{block}{Drawing from distributions}
+\begin{itemize}
+	\item We can create heterogeneous agents / courses of infections /... by drawing new parameters or properties from probability distributions when we initialise the agent/determine the course of the infection/ ...
+	\item For discrete choices: 
+\begin{lstlisting}[basicstyle=\tiny\ttfamily, tabsize=6] 
+for ag in range(N_AGENTS):
+	ag = Agent()
+	ag.property1 = np.random.choice(all_choices, p = probs_for_choices)
+\end{lstlisting}
+	\item For continuous random variables (here normally distributed):
+\begin{lstlisting}[basicstyle=\tiny\ttfamily, tabsize=6] 
+import scipy.stats as stats
+for ag in range(N_AGENTS):
+	ag = Agent()
+	ag.property2 = stats.norm(mu, sigma).rvs()
+	# distributed according to stats.norm(mu, sigma).pdf(x)
+\end{lstlisting}
+\end{itemize}
+\end{block}
+Repetition: When do we want to exploit this?
+
+\end{frame}
+
+\againframe<4>{overview}
+
+%\frame{BREAK}
+
+\againframe<3>{Outline}
+
+\section{Concept 3: Networks}
+\input{network-base}
+
+\begin{frame}[fragile]
+\frametitle{\textbf{Concept 3 Summary}}
+\begin{block}{Social Network}
+\bi 
+\item Social networks can be used to represent communication/interaction between agents
+\item Topology of the network matters (in particular w.r.t.\ clustering and node degree)
+\item The package networkx is wonderful and simple to use:
+\begin{lstlisting}[basicstyle=\tiny\ttfamily, tabsize=6]
+import networkx as nx
+G = nx.watts_strogatz_graph(100, 4, 0.1)
+nx.draw(G)
+print("Agents have contacts to the nodes/agents with these indices: ", G.adj)
+\end{lstlisting}
+\ei
+\end{block}
+\end{frame}
+
+\againframe<5>{overview}
+
+\input{update}
+
+\input{observe-results}
+
+%\againframe<6>{overview}
+
+\begin{frame}{What we have COVERED today.}
+	\begin{itemize}
+		\item An Agent-Based Model of the spread of Covid-19 in a small society in order to test local policies
+		\item How to make agents heterogeneous: Drawing from probability distributions
+		\item How to let agents interact with each other: Social Networks for the interaction of agents
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Assignment}
+\only<1>{\bi
+	\item Basic:
+	\bi 
+	\item Read and understand the code!
+	\item Run it with several different \textit{seed} values
+	\item Change the network topology and properties (e.g.\ \textit{k} or \textit{p} of the Watts-Strogatz Network). What policy could this correspond to?
+	\item Try an entirely different network (\ra networkx documentation). 
+	\item Take the distributions for \textit{incubation period} or \textit{base infectiousness}, draw samples from them and plot their PDF and the histogram of frequencies (see Concept 2). {\scriptsize Note: You may want to create a separate script for this.}
+	\item Select one of these distributions in the Covid-19 Model and change it (e.g.\ decrease the incubation period or make all agents equally infectious). Find something that interests you!
+	\ei 
+	\ei 
+}
+\only<2>{\bi
+	\item Intermediate:
+	\bi
+	%\item Imagine you want to implement how wearing a face mask changes the results, which parameter/process would you change? Test this.
+	\item Implement a soft isolation policy: I.e.\ when an agent turns symptomatic, she/he will quarantine and strongly reduce further contacts. \newline
+	{\scriptsize Hint: For this you might want to add a line in the \textit{update} function that reduces the number of contacts when an isolated, symptomatic agent is about to infect these.}
+	\item This policy may not be in place immediately, but only some time after the outbreak has been noticed. Implement a delay of the policy implementation. How does such a delay impact the effectiveness of a policy?
+	\ei 
+	\ei
+}
+\only<3>{
+	\bi
+	\item Hard, if you feel like exploring:
+	\bi 
+	\item Implement your own (time-dependent) policy strategy
+	\bi 
+	\item This could include dynamic changes in the network
+	\item Or different behaviour of each age-group.
+	\ei
+	\item Let a few agents be defectors that do not adhere to the policies.
+	\ei 
+	\ei
+	\vfill 
+	Note: Whenever you program anything, make sure you test (for yourself), e.g.\ by varying the crucial parameters, whether the results are what you expect. \\
+}
+\vfill 
+Deadline: Wednesday, {\color{red} 2nd December 2020}, send relevant code, a PDF with your conclusions (including figures) to \href{mailto:peter.steiglechner@leibniz-zmt.de}{peter.steiglechner@leibniz-zmt.de}. As always, please engage if you have any questions or ideas that you want to discuss. 
+\end{frame}
+
+\begin{frame}{References}
+	\renewcommand*{\bibfont}{\tiny} 
+\printbibliography
+\end{frame}
+\begin{frame}
+	\frametitle{Further reading}
+	\begin{thebibliography}{10}
+		\tiny
+		\beamertemplatebookbibitems % block for books
+		\bibitem[Sayama, 2015]{SAYA15}
+		Hiroki Sayama~2015
+		\newblock {\em Introduction to the Modeling and Analysis of
+			Complex Systems}
+		\newblock Open SUNY Textbooks 
+
+		
+		\beamertemplatearticlebibitems % block for articles
+		
+		\beamertemplateonlinebibitems % block for online material
+		\bibitem[NetworkX 2.0, 2017]{NX2.0}
+		NetworkX Reference 2.0
+		\newblock \url{https://networkx.github.io/documentation/stable/_downloads/networkx_reference.pdf}
+		\newblock Sep 20, 2017	
+		
+	\end{thebibliography}
+	
+\end{frame}
+
+
+\end{document}

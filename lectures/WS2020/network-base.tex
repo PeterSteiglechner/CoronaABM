@@ -1,0 +1,174 @@
+%\begin{frame}{Social Networks}
+%
+%Some slides from Ago:
+%\bi 
+%\item What is a network
+%\item What is the meaning of nodes, links
+%\item Mention directed/undirected/weighted
+%\item Different topologies (mainly small-world and scale-free)
+%\bi 
+%\item Node Degree, 
+%\item Clustering coeff
+%\ei
+%\item The networkx package
+%\ei
+%\end{frame}
+
+
+\begin{frame}{Social Network -- Basics}
+	With which agents do agents interact? I.e.\ who will be possibly infected by a infectious agent? \ra Social Network
+	\bi
+	\item Nodes: \quad Each node represents one agent
+	\item Link/Edge between nodes: \quad  Agents are in `physical contact'
+	
+	\only<1>{\centering \includegraphics[width=0.4\linewidth]{WattsStrogatz/network}}
+	\item<2-> (averageg) Node degree = (avg) Nr of links from the agent
+	\item<3-> Adjacency Matrix and List: Alternative network representation. \newline
+			Entry in matrix is 1 = "there is a link between the nodes with index corresponding to row and column of the entry".
+	\ei
+	\centering
+\only<1>{\includegraphics[width=0.4\linewidth]{WattsStrogatz/network}}	\only<3->{\includegraphics[width=0.7\linewidth]{Networks/images/adj}}
+\end{frame}
+
+
+
+\begin{frame}{Social Network - Topology}
+\begin{overlayarea}{\linewidth}{12cm}
+\bi 
+\item We will use one particular network: A `Watts-Strogatz network', often also referred to as `small-world network'.
+\bi 
+\item<2-> All $n$ nodes/agents are aligned in a ring.
+\item<3-> They are connected to their $k$ nearest neighbours (left/right)
+\item<4-> With probability $p$, each link is capped and re-drawn to a random node/agent anywhere on the ring.
+\ei 
+\ei
+\begin{center}
+	\only<1>{\vspace{3cm}}
+	
+	\only<2>{\includegraphics[width=0.35\linewidth]{images/watts1}}
+	
+	\only<3>{\includegraphics[width=0.35\linewidth]{images/watts2}}
+	
+	\only<4>{\includegraphics[width=0.35\linewidth]{images/watts3}}
+	
+	\only<5>{\includegraphics[width=0.7\linewidth]{images/watts_strogatz}}
+\end{center}
+{\tiny  D. J. Watts \& S. H. Strogatz, Collective dynamics of 'small-world'
+	networks, \textit{Nature}, 393:440--442, 1998.}	
+\end{overlayarea}
+\end{frame}
+
+\begin{frame}{Social Network -- Perspective}
+	\bi 
+	\item Network Theory is one of the `hottest' topics in complexity science (e.g.\ neural networks)
+	\item The method can be applied on various systems, topics, problems 
+	\item Some extensions: 
+	\bi 	
+	\item Directed and weighted links
+	\item Topologies of different networks:
+		\bi 
+		\item Scale-free network \ra e.g.\ Barabási-Albert-Modell
+		\item Random Graph
+		\ei
+	\item Clustering, Clustering Coefficient.
+	\item Co-evolving networks, i.e.\ that change over time depending on the state of the system.
+	\ei
+	\ei
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{The \textit{Networkx} Package in Python}
+
+\begin{overlayarea}{\linewidth}{12cm}
+\begin{onlyenv}<1->
+\begin{lstlisting}[basicstyle=\tiny\ttfamily, tabsize=6] 
+import networkx as nx
+G = nx.Graph()
+G.add_node("Ahmad")
+...
+G.add_edge("Ahmad", "Can")
+...
+pos = nx.spring_layout(G)	# Just a `nice' way of arranging the nodes
+nx.draw(G, pos, with_labels=True)
+\end{lstlisting}
+\end{onlyenv}
+\vspace{1cm}
+
+\centering
+\begin{columns}
+	\begin{column}{0.4\textwidth}
+		\only<1-5>{\includegraphics[width=0.7\linewidth]{WattsStrogatz/network}}	
+	\end{column}
+	\begin{column}{0.6\textwidth}
+	
+	\only<2-5>{What's the adjacency Matrix?}
+	\only<2>{
+		\phantom{$\begin{pmatrix} Deborah\ D\end{pmatrix} \Rightarrow $\ \ }
+		$\begin{pmatrix} A & B & C & D \end{pmatrix} $ \\
+		\phantom{$\begin{pmatrix} Deborah\ D\end{pmatrix} \Rightarrow \begin{pmatrix} A & B \end{pmatrix}$} $\Downarrow$ \\
+		$\begin{pmatrix} Ahmad\ A\\ Beate\ B\\ Can\ C\\Deborah\ D\end{pmatrix} \Rightarrow
+		\begin{pmatrix}
+			\color{white}{0}& \color{white}{1}& \color{white}{1}& \color{white}{1}\\
+			& & & \\
+			& & & \\
+			& & & 
+		\end{pmatrix}$
+	}
+		
+	\only<3>{
+		\phantom{$\begin{pmatrix} Deborah\ D\end{pmatrix} \Rightarrow $\ \ }
+		$\begin{pmatrix} A & B & C & D \end{pmatrix} $ \\
+		\phantom{$\begin{pmatrix} Deborah\ D\end{pmatrix} \Rightarrow \begin{pmatrix} A & B \end{pmatrix}$} $\Downarrow$ \\
+		$\begin{pmatrix} Ahmad\ A\\ Beate\ B\\ Can\ C\\Deborah\ D\end{pmatrix} \Rightarrow
+			\begin{pmatrix}
+			\color{gray}{0}& 1& 1& 1\\
+			& & & \\
+			& & & \\
+			& & & 
+		\end{pmatrix}$
+	}
+	\only<4>{
+		\phantom{$\begin{pmatrix} Deborah\ D\end{pmatrix} \Rightarrow $\ \ }
+		$\begin{pmatrix} A & B & C & D \end{pmatrix} $ \\
+		\phantom{$\begin{pmatrix} Deborah\ D\end{pmatrix} \Rightarrow \begin{pmatrix} A & B \end{pmatrix}$} $\Downarrow$ \\
+		$\begin{pmatrix} Ahmad\ A\\ Beate\ B\\ Can\ C\\Deborah\ D\end{pmatrix} \Rightarrow
+		\begin{pmatrix}
+			\color{gray}{0}& 1& 1& 1\\
+			\color{gray}{1}&\color{gray}{0}& 0& 0\\
+			\color{gray}{1}& \color{gray}{0}& & \\
+			\color{gray}{1}& \color{gray}{0}& & 
+		\end{pmatrix}$
+	}
+	\only<5>{
+		\phantom{$\begin{pmatrix} Deborah\ D\end{pmatrix} \Rightarrow $\ \ }
+		$\begin{pmatrix} A & B & C & D \end{pmatrix} $ \\
+		\phantom{$\begin{pmatrix} Deborah\ D\end{pmatrix} \Rightarrow \begin{pmatrix} A & B \end{pmatrix}$} $\Downarrow$ \\
+		$\begin{pmatrix} Ahmad\ A\\ Beate\ B\\ Can\ C\\Deborah\ D\end{pmatrix} \Rightarrow
+		\begin{pmatrix}
+			\color{gray}{0}& 1& 1& 1\\
+			\color{gray}{1}& \color{gray}{0}& 0& 0\\
+			\color{gray}{1}& \color{gray}{0}& \color{gray}{0}& 1\\
+			\color{gray}{1}& \color{gray}{0}& \color{gray}{1} & \color{gray}{0}
+		\end{pmatrix}$
+	}
+\end{column}
+\end{columns}
+
+\begin{onlyenv}<6->
+Building a Watts-Strogatz Network is even easier:
+\begin{lstlisting}[basicstyle=\tiny\ttfamily, tabsize=4] 
+WS = nx.watts_strogatz_graph(
+					N_AGENTS,   	# n = How many nodes
+					4, 	  	# k = How many nearest neighbours
+					0.1)	# p = Probability for each link to be rewired
+		
+pos = nx.spring_layout(WS)
+nx.draw(WS, pos, with_labels=True)
+
+print("The adjacency matrix is: ", nx.adjacency_matrix(WS))
+print("The adjacency list for agent `ag' is: ", WS.adj[ag.id])
+	\end{lstlisting}
+\end{onlyenv}
+
+		\end{overlayarea}
+\end{frame}

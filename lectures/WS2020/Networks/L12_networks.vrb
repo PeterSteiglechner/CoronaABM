@@ -1,0 +1,6 @@
+\forloop{ct}{1}{\value{ct} < 7}
+	{
+		\only<\value{ct}>{
+			\lstinputlisting[language=python, firstline=1, lastline=\value{ct}]{test.py}
+		}
+	}
